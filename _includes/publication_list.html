@@ -1,0 +1,57 @@
+{% for publication in publications %}
+<div class="publication-item">
+    <div class="row">
+        {% if publication.cover %}
+        <div class="col-md-3">
+            <img src="{{ publication.cover | relative_url }}" class="img-fluid" alt="publication cover">
+        </div>
+        <div class="col-md-9">
+        {% else %}
+        <div class="col-12">
+        {% endif %}
+            <h5 class="publication-title">{{ publication.title }}</h5>
+            <div class="publication-authors">{{ publication.authors | join: ", " }}</div>
+            <div class="publication-venue">{{ publication.pub }} {{ publication.pub_date }}</div>
+            
+            <!-- 修改摘要显示部分 -->
+            <div class="abstract-container">
+                <div class="abstract-body">
+                    {{ publication.abstract | truncate: 200 }}
+                </div>
+                {% if publication.abstract.size > 200 %}
+                <div class="abstract-full" style="display: none;">
+                    {{ publication.abstract }}
+                </div>
+                <div class="abstract-toggle" onclick="toggleAbstract(this)">Show more</div>
+                {% endif %}
+            </div>
+
+            {% if publication.links %}
+            <div class="publication-links">
+                {% for link in publication.links %}
+                <a href="{{ link[1] }}" target="_blank" class="btn btn-sm btn-outline-primary">{{ link[0] }}</a>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<script>
+function toggleAbstract(element) {
+    const container = element.parentElement;
+    const shortVersion = container.querySelector('.abstract-body');
+    const fullVersion = container.querySelector('.abstract-full');
+    
+    if (fullVersion.style.display === 'none') {
+        shortVersion.style.display = 'none';
+        fullVersion.style.display = 'block';
+        element.textContent = 'Show less';
+    } else {
+        shortVersion.style.display = 'block';
+        fullVersion.style.display = 'none';
+        element.textContent = 'Show more';
+    }
+}
+</script> 

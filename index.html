@@ -5,26 +5,33 @@ navbar_title: Home
 ---
 {% include widgets/profile_card.html %}
 
+<div class="section-title">Education</div>
+<div class="education-section">
+    {% for item in site.data.profile.education %}
+    <div class="education-item d-flex align-items-start mb-3">
+        <img src="{{ item.logo | relative_url }}" alt="{{ item.name }}" class="education-logo mt-1">
+        <div class="education-content">
+            <div class="education-name">{{ item.name }}</div>
+            <div class="education-degree">{{ item.position }}</div>
+            <div class="education-date">{{ item.date }}</div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="section-title">News</div>
+{% include widgets/news_card.html limit=site.data.display.homepage.num_news %}
+
+{% if site.data.display.homepage.show_selected_publications %}
+<div class="section-title">Publications</div>
+{% assign pubs = site.publications | sort: "date" | reverse | where: "selected", true %}
+{% include widgets/publication_card.html publications=pubs %}
+{% endif %}
+
 {% include widgets/debug_repo_name.html %}
 
 {% include widgets/debug_url.html %}
 
-{% if site.data.display.homepage.show_experience %}
-    {% include widgets/experience_card.html %}
-{% endif %}
-
-{% if site.data.display.homepage.show_news %}
-    {% assign count_news = site.news | size %}
-    {% if count_news > 0 %}
-        {% include widgets/news_card.html limit=site.data.display.homepage.num_news %}
-    {% endif %}
-{% endif %}
-
-{% if site.data.display.homepage.show_selected_publications %}
-    {% assign pubs = site.publications | sort: "date" | reverse | where: "selected", true %}
-    {% 
-        include widgets/publication_card.html 
-        publications=pubs
-        title='<i class="fas fa-star"></i> Selected Publications'
-    %}
-{% endif %}
+<div style="width: 200px; height: 200px; margin: 0 auto;">
+    <script type="text/javascript" id="clstr_globe" src="//clustrmaps.com/globe.js?d=WyQSf3utFxSkp0DrxtqRlKg3OzfVR2ca--jmaHk7pVM"></script>
+</div>

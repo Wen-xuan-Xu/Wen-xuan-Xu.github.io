@@ -1,14 +1,74 @@
 {% assign publications = include.publications %}
-<div class="my-3 p-0 bg-white shadow-sm rounded-sm">
-    <h6 class="border-bottom border-gray p-3 mb-0">
-        {% if include.title %}{{ include.title }}{% else %}<i class="fas fa-star"></i> Selected Recent Publications{% endif %} 
-        <a href="{{ 'publications' | relative_url }}">(view all <i class="fas fa-angle-double-right"></i>)</a>
-    </h6>
-    {% for item in publications limit:include.limit %}
-        {% include widgets/publication_item.html item=item first=false last=false %}    
+<div class="publication-list">
+    {% for publication in publications %}
+    <div class="publication-item">
+        {% if publication.cover %}
+        <div class="publication-cover">
+            <img src="{{ publication.cover | relative_url }}" alt="{{ publication.title }}">
+        </div>
+        {% endif %}
+        <div class="publication-content">
+            <h3 class="publication-title">{{ publication.title }}</h3>
+            <div class="publication-authors">
+                {% for author in publication.authors %}
+                    {% if author == "Wenxuan Xu" %}
+                        <strong>{{ author }}</strong>
+                    {% else %}
+                        {{ author }}
+                    {% endif %}
+                    {% unless forloop.last %}, {% endunless %}
+                {% endfor %}
+            </div>
+            <div class="publication-venue">
+                {% if publication.pub %}
+                <i>{{ publication.pub }}</i>
+                {% endif %}
+                {% if publication.pub_date %}
+                {{ publication.pub_date }}
+                {% endif %}
+            </div>
+            {% if publication.abstract %}
+            <div class="abstract-container">
+                <div class="abstract-body">
+                    {{ publication.abstract | truncate: 200 }}
+                </div>
+                {% assign abstract_size = publication.abstract | size %}
+                {% if abstract_size > 200 %}
+                <div class="abstract-full" style="display: none;">
+                    {{ publication.abstract }}
+                </div>
+                <div class="abstract-toggle" onclick="toggleAbstract(this)">Show more</div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% if publication.links %}
+            <div class="publication-links">
+                {% for link in publication.links %}
+                <a href="{{ link[1] }}" target="_blank">{{ link[0] }}</a>
+                {% if forloop.last == false %} · {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
     {% endfor %}
-    <h6 class="d-block p-3 mt-0 text-right">
-        <a href="{{ 'publications' | relative_url }}">All publications <i class="fas fa-angle-double-right"></i></a>
-    </h6>
 </div>
+
+<script>
+function toggleAbstract(element) {
+    const container = element.parentElement;
+    const shortVersion = container.querySelector('.abstract-body');
+    const fullVersion = container.querySelector('.abstract-full');
+    
+    if (fullVersion.style.display === 'none') {
+        shortVersion.style.display = 'none';
+        fullVersion.style.display = 'block';
+        element.textContent = 'Show less';
+    } else {
+        shortVersion.style.display = 'block';
+        fullVersion.style.display = 'none';
+        element.textContent = 'Show more';
+    }
+}
+</script>
 

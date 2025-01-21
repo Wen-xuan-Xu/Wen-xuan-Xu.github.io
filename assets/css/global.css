@@ -1,8 +1,27 @@
 @charset "utf-8";
+
+:root {
+  --dartmouth-green: #00693e;
+  --dartmouth-green-light: #238C5E;
+  --dartmouth-green-dark: #004C2C;
+  --header-green: #00843e;    /* 明亮的绿色用于标题 */
+  --link-color: #2563eb;      /* 保持链接的蓝色 */
+  --link-hover: #1e40af;      /* 保持链接悬停颜色 */
+  --text-dark: #000000;       /* 纯黑色用于主要文字 */
+  --text-gray: #4A5568;       /* 深灰色用于次要文字 */
+  --primary-blue: #0A192F;
+  --primary-blue-light: #172A45;
+  --border-color: #2D3748;    /* 边框颜色 */
+}
+
 body {
-    font-family: "Lato", sans-serif;
+    font-family: "Source Serif Pro", "Merriweather", serif;
     font-weight: 400;
-    padding-top: 5.0rem;
+    font-size: 16px;
+    line-height: 1.8;
+    letter-spacing: -0.02em;  /* 减小字间距 */
+    padding-top: 0;
+    color: #000000;
 }
 
 h1, h2, h3, h4, h5, h6,
@@ -20,7 +39,16 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .navbar {
-    opacity: 0.95;
+    background-color: white !important;
+    border-bottom: 1px solid #eee;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: var(--link-color);
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+    color: var(--link-hover);
 }
 
 .inline-badge {
@@ -39,8 +67,117 @@ h1, h2, h3, h4, h5, h6,
     max-height: 120px;
 }
 
+.abstract-container {
+    margin-top: 0.2rem;
+}
+
 .abstract-body {
-    min-height: 100px;
+    font-size: 0.9rem;
+    line-height: 1.35;
+    color: var(--text-dark);
+}
+
+.abstract-full {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text-dark);
+}
+
+.abstract-toggle {
+    color: var(--link-color);
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.abstract-toggle:hover {
+    color: var(--link-hover);
+    text-decoration: underline;
+}
+
+.publication-item {
+    margin-bottom: 2.5rem;
+    padding-bottom: 0;
+    border-bottom: none;
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    min-height: 180px;  /* 调整最小高度 */
+}
+
+.publication-cover {
+    flex-shrink: 0;
+    width: 200px;     /* 增加宽度 */
+}
+
+.publication-cover img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    border: 1px solid #eee;
+    object-fit: cover;
+    aspect-ratio: 3/2;  /* 改为长方形 */
+}
+
+.publication-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    min-height: 133px;  /* 与图片高度保持一致 (200px * 2/3) */
+}
+
+.publication-title {
+    font-size: 1.15rem;
+    line-height: 1.3;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
+
+.publication-authors {
+    font-size: 0.92rem;
+    margin-bottom: 0.2rem;
+}
+
+.publication-authors strong {
+    font-weight: 700;  /* 可以调整加粗程度 */
+    color: var(--text-dark);  /* 可以设置特定颜色 */
+}
+
+.publication-venue {
+    font-size: 0.92rem;
+    margin-bottom: 0.3rem;
+    display: flex;
+    gap: 0.8rem;
+    align-items: baseline;
+}
+
+.publication-venue i {
+    font-style: italic;
+}
+
+.publication-links {
+    margin-top: auto;
+    padding-top: 0.4rem;
+}
+
+.publication-links a {
+    font-size: 0.9rem;
+    color: var(--link-color);
+    text-decoration: none;
+    padding: 0.2rem 0;
+}
+
+.publication-links a:hover {
+    text-decoration: underline;
+}
+
+/* 移除原有的白色背景和阴影 */
+.my-3.p-3.bg-white.shadow-sm.rounded-sm {
+    background: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
 img.lazy {
@@ -65,5 +202,385 @@ div.lazy {
 
 .email-text {
     font-family: Courier, monospace;
+}
+
+.portrait {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+    margin-bottom: 0.5rem;
+    flex-grow: 1;
+}
+
+.name {
+    font-family: "Crimson Text", serif;
+    color: var(--text-dark);
+    font-size: 3.2rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    line-height: 1.2;
+}
+
+.secondary-name {
+    font-family: "Crimson Text", serif;
+    color: var(--text-dark);
+    font-size: 2.2rem;
+    margin-left: 1.8rem;
+}
+
+.positions {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+}
+
+.position-item {
+    margin-bottom: 0.3rem;
+}
+
+.position-logo {
+    height: 45px;
+    width: auto;
+    margin-right: 0.8rem;
+    vertical-align: middle;
+    object-fit: contain;
+}
+
+.contact-links {
+    margin: 1.5rem 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.contact-links a {
+    color: var(--link-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    transition: color 0.2s ease;
+}
+
+.contact-links a:hover {
+    color: var(--link-hover);
+    text-decoration: none;
+}
+
+.contact-links i {
+    font-size: 1.2rem;
+    margin-right: 0.5rem;
+}
+
+.contact-text {
+    font-size: 1rem;
+    color: var(--text-dark);
+}
+
+.bio {
+    font-size: 0.95rem;
+    line-height: 1.3;
+    color: var(--text-dark);
+    margin-top: 0.5rem;
+    text-align: justify;
+    font-weight: 500;
+}
+
+.bio a {
+    font-weight: 600;
+}
+
+.bio p {
+    margin-bottom: 0.4rem;
+}
+
+/* Section styles */
+.section-title {
+    font-family: "Crimson Text", serif;
+    color: var(--header-green);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0.2rem 0 0.4rem -0.05rem;
+    padding-bottom: 0.2rem;
+    border-bottom: 2px solid var(--header-green);
+}
+
+@media (max-width: 768px) {
+    .portrait {
+        max-width: 60%;
+        margin: 0 auto 2rem;
+    }
+    
+    .name {
+        font-size: 2rem;
+        text-align: center;
+    }
+    
+    .secondary-name {
+        display: block;
+        margin-left: 0;
+        margin-top: 0.5rem;
+    }
+
+    .container {
+        padding-left: 1.5rem;    /* 移动端稍微减小一点边距 */
+        padding-right: 1.5rem;
+    }
+}
+
+/* 教育经历部分样式更新 */
+.education-section {
+    margin-bottom: 1rem;
+}
+
+.education-item {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.education-content {
+    flex: 1;
+    padding-right: 0;
+    padding-left: 2rem;  /* 改为左侧padding */
+}
+
+.education-logo-container {
+    flex-shrink: 0;
+    width: 100px;  /* 从150px增加到180px */
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+}
+
+.education-logo {
+    width: 120px;   /* 从130px增加到160px */
+    height: 100px;  /* 从130px增加到160px */
+    object-fit: contain;
+}
+
+.education-name {
+    font-family: "Crimson Text", serif;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--header-green);
+    margin-bottom: 0.2rem;
+    line-height: 1.2;
+}
+
+.education-degree {
+    font-size: 1rem;  /* 调整学位信息的字体大小 */
+    color: var(--text-dark);
+    margin-bottom: 0.15rem;
+    line-height: 1.2;
+    font-style: italic;  /* 添加斜体样式 */
+}
+
+.education-details {
+    font-size: 0.95rem;
+    color: var(--text-gray);
+    margin: 0.15rem 0;
+    display: inline;
+    font-style: italic;
+    line-height: 1.2;
+}
+
+.education-location {
+    margin-right: 0;  /* 移除右边距 */
+}
+
+.education-date {
+    color: var(--text-gray);
+    font-size: 0.95rem;
+    margin-left: 0.2rem;  /* 减小左边距 */
+}
+
+/* 在location和date之间添加分隔符 */
+.education-location:after {
+    content: " - ";  /* 添加分隔符 */
+    margin: 0 0.1rem;
+}
+
+.education-items {
+    font-size: 0.95rem;
+    line-height: 1.2;
+    margin-top: 0.2rem;
+    color: var(--text-dark);
+}
+
+/* News section styles */
+.news-outer {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.news-section {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* 移除其他 news-section 相关的样式定义 */
+.news-item {
+    display: flex;
+    align-items: baseline;
+    padding-bottom: 0.8rem;
+    margin-bottom: 0.8rem;
+    border-bottom: 1px solid #eee;
+}
+
+.news-date {
+    color: var(--text-gray);
+    font-size: 0.9rem;
+    margin-right: 1rem;
+    white-space: nowrap;
+}
+
+.news-title {
+    color: var(--text-dark);
+    flex: 1;
+}
+
+.news-title a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+.news-title a:hover {
+    color: var(--link-hover);
+}
+
+/* 更新正文容器样式 */
+.profile-content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 1rem;
+}
+
+/* 更新文字基础样式 */
+body {
+    font-family: "Source Serif Pro", "Merriweather", serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.8;
+    letter-spacing: -0.02em;  /* 减小字间距 */
+    color: #000000;
+}
+
+/* 更新链接样式 */
+a, 
+.navbar-light .navbar-nav .nav-link,
+.contact-links a,
+.news-title a {
+    color: var(--link-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover,
+.navbar-light .navbar-nav .nav-link:hover,
+.contact-links a:hover,
+.news-title a:hover {
+    color: var(--link-hover);
+    text-decoration: underline;
+}
+
+/* 更新bio样式 */
+.bio {
+    font-size: 0.95rem;
+    line-height: 1.3;
+    color: var(--text-dark);
+    margin-top: 0.5rem;
+    text-align: justify;
+    font-weight: 500;
+}
+
+/* 更新name样式 */
+.name {
+    font-family: "Crimson Text", serif;
+    color: var(--text-dark);
+    font-size: 3.2rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    line-height: 1.2;
+}
+
+.secondary-name {
+    font-family: "Crimson Text", serif;
+    color: var(--text-dark);
+    font-size: 2.2rem;
+    margin-left: 1.8rem;
+}
+
+/* 更新position样式 */
+.positions {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+}
+
+/* 调整照片容器样式 */
+.profile-photo-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: 1rem;
+}
+
+/* 照片说明文字样式 */
+.portrait-caption {
+    font-size: 0.9rem;
+    color: var(--text-gray);
+    text-align: center;
+}
+
+/* 调整container的上边距 */
+.container {
+    padding-top: 0.5rem;
+    max-width: 1000px;        /* 减小容器最大宽度 */
+    padding-left: 2rem;       /* 增大左边距 */
+    padding-right: 2rem;      /* 增大右边距 */
+}
+
+/* 更新name容器样式 */
+.name-container {
+    border-bottom: 2px solid var(--text-dark);  /* 添加下边框作为分割线 */
+    margin-bottom: 1.5rem;  /* 增加一点底部间距 */
+    padding-bottom: 0.5rem;  /* 添加一些内部底部间距 */
+}
+
+/* 调整name的margin，因为现在container会处理间距 */
+.name {
+    margin-bottom: 0.3rem;  /* 减小底部margin，因为container会提供间距 */
+}
+
+/* 确保文本内容也使用相同的字间距 */
+.news-title, 
+.bio, 
+.education-content,
+.publication-title,
+.publication-authors,
+.publication-venue {
+    letter-spacing: -0.02em;
+}
+
+.publication-list {
+    margin-bottom: 1rem;
+}
+
+.publication-list:last-child {
+    margin-bottom: 0;
+}
+
+/* 页脚样式 */
+.footer {
+    padding: 1rem 0;
+    margin-top: 2rem;
 }
 

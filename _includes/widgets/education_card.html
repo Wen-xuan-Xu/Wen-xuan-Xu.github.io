@@ -1,0 +1,17 @@
+<div class="education-section">
+    {% for item in site.data.profile.education %}
+    <div class="education-item">
+        {% if item.logo %}
+        <div class="education-logo-container">
+            <img src="{{ item.logo | relative_url }}" alt="{{ item.name }} logo" class="education-logo">
+        </div>
+        {% endif %}
+        <div class="education-content">
+            <div class="education-header">
+                <h3 class="education-name">{{ item.name }}</h3>
+            </div>
+            {{ item.position }}
+        </div>
+    </div>
+    {% endfor %}
+</div> 
