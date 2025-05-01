@@ -1,22 +1,34 @@
-"Your Name":
+"Wenxuan Xu":
   bold: true
+  url: https://example.com/wenxuan-xu
 
-"Robert White":
-  url: https://www.google.com/?q=Robert+White
+"Wenxuan Xu*":
+  bold: true
+  url: https://wen-xuan-xu.github.io/
 
-"Charles Green (MIT)":
-  name: Charles Green
-  url: https://www.google.com/?q=Charles+Green+MIT
+"Xuning Hu":
+  url: https://xuning-hu.github.io/
 
-"Charles Green (Stanford)":
-  name: Charles Green
-  url: https://www.google.com/?q=Charles+Green+Stanford
+"Xuning Hu*":
+  url: https://xuning-hu.github.io/
 
-"Garrett Harris":
-  url: https://www.google.com/?q=Garrett+Harris
+"Yuntao Wang":
+  url: https://pi.cs.tsinghua.edu.cn/lab/people/YuntaoWang/en/
 
-"James Wang":
-  url: https://www.google.com/?q=James+Wang
+"Wolfgang Stuerzlinger":
+  url: https://vvise.iat.sfu.ca/people/wolfgang-stuerzlinger?_gl=1*1bnta04*_gcl_au*MTIzNjU5Njk0MS4xNzQ2MDU0Njk3*_ga*MTAwMTAyODkzOS4xNzM3MzU4ODM4*_ga_R4BCVYL1QF*MTc0NjA1NDY5Ny4yLjAuMTc0NjA1NDY5OC41OS4wLjA.
 
-"John Doe":
-  url: https://www.google.com/?q=John+Doe
+"Hai-Ning Liang":
+  url: https://hai-ning-liang.github.io/
+
+"Yushi Wei":
+  # 如果有URL，可以在这里添加
+
+"Andrew Campbell":
+  url: https://www.cs.dartmouth.edu/~campbell/
+
+"Zhang Hao":
+  # 如果有URL，可以在这里添加
+
+"Jin Huang":
+  # 如果有URL，可以在这里添加

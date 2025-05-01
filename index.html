@@ -9,11 +9,12 @@ navbar_title: Home
 <div class="education-section">
     {% for item in site.data.profile.education %}
     <div class="education-item d-flex align-items-start mb-3">
-        <img src="{{ item.logo | relative_url }}" alt="{{ item.name }}" class="education-logo mt-1">
+        <div class="education-logo-container">
+            <img src="{{ item.logo | relative_url }}" alt="{{ item.name }}" class="education-logo">
+        </div>
         <div class="education-content">
             <div class="education-name">{{ item.name }}</div>
-            <div class="education-degree">{{ item.position }}</div>
-            <div class="education-date">{{ item.date }}</div>
+            {{ item.position }}
         </div>
     </div>
     {% endfor %}

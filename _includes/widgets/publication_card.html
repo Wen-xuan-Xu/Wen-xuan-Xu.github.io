@@ -1,54 +1,44 @@
 {% assign publications = include.publications %}
-<div class="publication-list">
+<div class="publication-card-list">
     {% for publication in publications %}
-    <div class="publication-item">
+    <div class="publication-card">
         {% if publication.cover %}
-        <div class="publication-cover">
-            <img src="{{ publication.cover | relative_url }}" alt="{{ publication.title }}">
+        <div class="publication-card-cover">
+            <img src="{{ publication.cover | relative_url }}" alt="{{ publication.title }}" class="publication-card-image">
         </div>
         {% endif %}
-        <div class="publication-content">
-            <h3 class="publication-title">{{ publication.title }}</h3>
-            <div class="publication-authors">
-                {% for author in publication.authors %}
-                    {% if author == "Wenxuan Xu" %}
-                        <strong>{{ author }}</strong>
-                    {% else %}
-                        {{ author }}
-                    {% endif %}
-                    {% unless forloop.last %}, {% endunless %}
-                {% endfor %}
+        <div class="publication-card-content">
+            <h3 class="publication-card-title">{{ publication.title }}</h3>
+            <div class="publication-card-authors">
+                {% include widgets/author_list.html authors=publication.authors %}
             </div>
-            <div class="publication-venue">
+            <div class="publication-card-venue">
                 {% if publication.pub %}
-                <i>{{ publication.pub }}</i>
+                <span class="venue">{{ publication.pub }}</span>
                 {% endif %}
                 {% if publication.pub_date %}
-                {{ publication.pub_date }}
+                (<span class="year">{{ publication.pub_date }}</span>)
                 {% endif %}
             </div>
             {% if publication.abstract %}
-            <div class="abstract-container">
-                <div class="abstract-body">
-                    {{ publication.abstract | truncate: 200 }}
-                </div>
-                {% assign abstract_size = publication.abstract | size %}
-                {% if abstract_size > 200 %}
-                <div class="abstract-full" style="display: none;">
-                    {{ publication.abstract }}
-                </div>
-                <div class="abstract-toggle" onclick="toggleAbstract(this)">Show more</div>
+            <div class="publication-card-abstract">
+                {{ publication.abstract | truncate: 150 }}
+            </div>
+            {% endif %}
+            <div class="publication-card-links">
+                {% if publication.links %}
+                    {% for link in publication.links %}
+                        {% if link[1].url %}
+                            <a href="{{ link[1].url }}" target="{{ link[1].target | default: '_blank' }}">[{{ link[0] }}]</a>
+                        {% else %}
+                            <a href="{{ link[1] }}" target="_blank">[{{ link[0] }}]</a>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {% if publication.paper %}
+                    <a href="{{ publication.paper }}" target="_blank">[paper]</a>
                 {% endif %}
             </div>
-            {% endif %}
-            {% if publication.links %}
-            <div class="publication-links">
-                {% for link in publication.links %}
-                <a href="{{ link[1] }}" target="_blank">{{ link[0] }}</a>
-                {% if forloop.last == false %} · {% endif %}
-                {% endfor %}
-            </div>
-            {% endif %}
         </div>
     </div>
     {% endfor %}
@@ -63,11 +53,11 @@ function toggleAbstract(element) {
     if (fullVersion.style.display === 'none') {
         shortVersion.style.display = 'none';
         fullVersion.style.display = 'block';
-        element.textContent = 'Show less';
+        element.textContent = '显示更少';
     } else {
         shortVersion.style.display = 'block';
         fullVersion.style.display = 'none';
-        element.textContent = 'Show more';
+        element.textContent = '显示更多';
     }
 }
 </script>

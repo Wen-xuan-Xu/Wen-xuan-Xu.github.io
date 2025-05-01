@@ -1,32 +1,49 @@
 ---
 layout: default
-title : Publications
+title: Publications
 navbar_title: Publications
 body_attr: >-
-  data-spy="scroll" data-target="#navbar-year" data-offset="100"
+  data-spy="scroll" data-target="#year-nav" data-offset="100"
 ---
 
 {% assign pubs_by_year = site.publications | sort: "date" | reverse | group_by_exp: "item", "item.date | date: '%Y'" %}
 
-<div class="row">
-    <div class="col-12 col-lg-10">
-        {% for year in pubs_by_year %}
-        {% assign num_papers = year.items | size %}
-        <h2 class="pt-4" id="year-{{ year.name }}">{{ year.name }}</h2>
-        <div class="my-0 p-0 bg-white shadow-sm rounded-sm">
-            {% for item in year.items %}
-                {% include widgets/publication_item.html item=item hide_bottom_border=forloop.last first=forloop.first last=forloop.last %}
+<div class="container-fluid publications-container">
+  <div class="row">
+    <!-- 主要内容区域 -->
+    <div class="col-12">
+      <h1 class="page-title mb-4">Publications</h1>
+      
+      {% for year in pubs_by_year %}
+        <div class="year-section" id="year-{{ year.name }}">
+          <h2 class="year-title">{{ year.name }}</h2>
+          
+          <div class="publications-list">
+            {% for pub in year.items %}
+              {% include widgets/new_publication_item.html publication=pub show_abstract=false %}
             {% endfor %}
+          </div>
         </div>
-        {% endfor %}
+      {% endfor %}
     </div>
-
-    <div class="col-2 d-none d-lg-block">
-        <div id="navbar-year" class="nav nav-pills flex-column sticky-top" style="top: 80px">
-            {% for year in pubs_by_year %}
-            <a class="nav-link d-block" href="#year-{{ year.name }}">{{ year.name }}</a>
-            {% endfor %}
-        </div>
-    </div>
-
+  </div>
 </div>
+
+<script>
+  // 在页面加载后初始化
+  $(document).ready(function() {
+    // 添加点击标题显示/隐藏摘要的功能
+    $('.publication-title').click(function() {
+      const abstract = $(this).closest('.publication-entry').find('.publication-abstract');
+      if (abstract.length) {
+        abstract.slideToggle(200);
+      }
+    }).css('cursor', 'pointer');
+    
+    // 添加鼠标悬停效果
+    $('.publication-entry').hover(
+      function() { $(this).addClass('publication-hover'); },
+      function() { $(this).removeClass('publication-hover'); }
+    );
+  });
+</script>

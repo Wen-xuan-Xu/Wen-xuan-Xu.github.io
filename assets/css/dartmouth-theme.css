@@ -1,0 +1,112 @@
+/* Dartmouth Green Theme */
+:root {
+  --dartmouth-green: #00693e;
+  --dartmouth-green-light: #238C5E;
+  --dartmouth-green-dark: #004C2C;
+  --header-color: var(--dartmouth-green);
+  --link-color: var(--dartmouth-green-light);
+  --link-hover: var(--dartmouth-green-dark);
+  --text-color: #222;
+  --text-secondary: #444;
+  --bg-light: #f9f9f9;
+  --border-color: #e0e0e0;
+}
+
+/* 标题颜色 */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  color: var(--dartmouth-green);
+}
+
+/* 链接颜色 */
+a {
+  color: var(--link-color);
+}
+
+a:hover {
+  color: var(--link-hover);
+}
+
+/* 导航栏 */
+.navbar-light .navbar-nav .nav-link {
+  color: var(--dartmouth-green);
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+  color: var(--dartmouth-green-light);
+}
+
+/* 年份导航栏 */
+.nav-pills .nav-link.active {
+  background-color: var(--dartmouth-green);
+}
+
+.nav-pills .nav-link {
+  color: var(--dartmouth-green);
+}
+
+.nav-pills .nav-link:hover {
+  background-color: rgba(0, 105, 62, 0.1);
+}
+
+/* 摘要 */
+.abstract-toggle {
+  color: var(--dartmouth-green);
+}
+
+.abstract-toggle:hover {
+  color: var(--dartmouth-green-light);
+}
+
+/* 字体调整 */
+body {
+  font-family: 'Roboto', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Roboto Slab', 'Georgia', serif;
+  font-weight: 500;
+}
+
+/* 页面板块标题优化 */
+.section-title {
+  font-size: 2rem;
+  position: relative;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+  color: var(--dartmouth-green);
+}
+
+.section-title:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background-color: var(--dartmouth-green);
+}
+
+/* 增加留白和段落间距 */
+.container {
+  padding: 0 20px;
+}
+
+p {
+  margin-bottom: 1.5em;
+}
+
+section {
+  margin-bottom: 3em;
+  padding-bottom: 2em;
+}
+
+/* 出版物标题颜色 */
+.publication-title {
+  color: var(--dartmouth-green-dark);
+}
+
+/* 添加 Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Slab:wght@400;500;700&display=swap'); 

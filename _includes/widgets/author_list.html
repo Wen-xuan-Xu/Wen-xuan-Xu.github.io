@@ -17,7 +17,18 @@
         {%- assign mark = "" -%}
     {%- endif -%}
 
+    {%- assign quoted_key = '"' | append: key | append: '"' -%}
     {%- assign info = site.data.authors[key] -%}
+    {%- if info == nil -%}
+        {%- assign info = site.data.authors[quoted_key] -%}
+    {%- endif -%}
+    
+    {%- if info == nil -%}
+        {%- assign info_with_mark = site.data.authors[_key] -%}
+        {%- if info_with_mark != nil -%}
+            {%- assign info = info_with_mark -%}
+        {%- endif -%}
+    {%- endif -%}
 
     {%- if info['name'] -%}
         {%- assign name = info['name'] -%}
@@ -32,7 +43,7 @@
     {%- endif -%}
     
     {%- if info['url'] -%}
-        <a class="text-body" target="_blank" href="{{ info['url'] }}">{{ display_name }}</a>{%- if forloop.index < authors.size -%}, {% endif -%}
+        <a class="text-body author-link" target="_blank" href="{{ info['url'] }}">{{ display_name }}</a>{%- if forloop.index < authors.size -%}, {% endif -%}
     {%- else -%}
         <span class="text-body">
             {{ display_name }}{%- if forloop.index < authors.size -%}, {% endif -%}
@@ -42,13 +53,13 @@
 {%- endfor -%}
 
 {%- if has_eq_contrib or has_corresponding %}
-<mark>(
+<span class="equal-contribution-mark">(
     {%- if has_eq_contrib -%}
-        * <i> equal contribution</i>
+        * <i>equal contribution</i>
     {%- endif -%}
     {%- if has_corresponding -%}
         {%- if has_eq_contrib -%}, {% endif -%}
-        <sup>#</sup> <i> corresponding author</i>
+        <sup>#</sup> <i>corresponding author</i>
     {%- endif -%}
-)</mark>
+)</span>
 {%- endif -%}

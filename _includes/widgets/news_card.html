@@ -3,7 +3,7 @@
         {% assign sorted_news = site.news | sort: "date" | reverse %}
         {% for item in sorted_news limit:include.limit %}
         <div class="news-item">
-            <div class="news-date">{{ item.date | date: "%b %d" }}</div>
+            <div class="news-date">{{ item.date | date: "%Y %b %d" }}</div>
             <div class="news-title">{{ item.title }}</div>
         </div>
         {% endfor %}

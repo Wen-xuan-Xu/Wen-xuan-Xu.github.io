@@ -1,0 +1,58 @@
+{% assign pub = include.publication %}
+<div class="publication-entry">
+    <!-- 封面图片 -->
+    <div class="publication-cover">
+        {% if pub.cover %}
+        <img src="{{ pub.cover | relative_url }}" alt="{{ pub.title }}" class="publication-image">
+        {% else %}
+        <div class="no-image">
+            <span>无图片</span>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- 出版物详情 -->
+    <div class="publication-details">
+        <!-- 标题 -->
+        <h3 class="publication-title">{{ pub.title }}</h3>
+        
+        <!-- 作者列表 -->
+        <div class="publication-authors">
+            {% include widgets/author_list.html authors=pub.authors %}
+        </div>
+        
+        <!-- 出版信息 -->
+        <div class="publication-info">
+            <span class="venue">{{ pub.pub }}</span>
+            {% if pub.pub_date %}
+            (<span class="year">{{ pub.pub_date }}</span>)
+            {% endif %}
+            {% if pub.pub_note %}
+            <span class="publication-note">{{ pub.pub_note }}</span>
+            {% endif %}
+        </div>
+        
+        <!-- 摘要，可选显示 -->
+        {% if include.show_abstract and pub.abstract %}
+        <div class="publication-abstract">
+            {{ pub.abstract | truncate: 300 }}
+        </div>
+        {% endif %}
+        
+        <!-- 链接 -->
+        <div class="publication-links">
+            {% if pub.links %}
+                {% for link in pub.links %}
+                    {% if link[1].url %}
+                        <a href="{{ link[1].url }}" target="{{ link[1].target | default: '_blank' }}">[{{ link[0] }}]</a>
+                    {% else %}
+                        <a href="{{ link[1] }}" target="_blank">[{{ link[0] }}]</a>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            {% if pub.paper %}
+                <a href="{{ pub.paper }}" target="_blank">[paper]</a>
+            {% endif %}
+        </div>
+    </div>
+</div> 
