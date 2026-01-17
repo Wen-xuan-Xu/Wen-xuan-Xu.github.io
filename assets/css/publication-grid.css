@@ -437,22 +437,33 @@
 }
 
 .publication-card-title {
-  font-size: 1.15rem;
-  margin-bottom: 0.6rem;
-  font-weight: 600;
+  font-size: 1.25rem;
+  margin-bottom: 0.4rem;
+  font-weight: 700;
   line-height: 1.3;
+  color: #000;
 }
 
 .publication-card-authors {
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-  color: #444;
+  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
+  color: #333;
+  font-weight: 500;
 }
 
 .publication-card-venue {
   font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}
+
+.publication-card-abstract {
+  font-size: 0.9rem;
+  line-height: 1.5;
   color: #555;
   margin-bottom: 0.75rem;
+  display: block;
 }
 
 .publication-card-links {
@@ -548,3 +559,167 @@
   transform: translateY(-3px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 } 
+/* Minimal engineer style overrides */
+.publications-container {
+  padding: 0;
+  max-width: 900px;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #111111;
+  border-bottom: 1px solid #e2e4e7;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.year-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #111111;
+  border-bottom: 1px solid #e2e4e7;
+  padding-bottom: 0.4rem;
+  margin: 2rem 0 1rem;
+}
+
+.publication-entry {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e2e4e7;
+  background: none;
+  box-shadow: none;
+}
+
+.publication-entry:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.publication-cover {
+  flex: 0 0 220px;
+  margin-right: 1.5rem;
+  background: none;
+  padding: 0;
+  border: 1px solid #e2e4e7;
+  box-shadow: none;
+  height: 140px;
+}
+
+.publication-image {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: cover;
+}
+
+.no-image {
+  background-color: #f0f1f3;
+  color: #8a9098;
+  font-style: normal;
+}
+
+.publication-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111111;
+  margin-bottom: 0.4rem;
+}
+
+.publication-title:hover {
+  color: #111111;
+}
+
+.publication-authors,
+.publication-info {
+  font-size: 0.95rem;
+  color: #5a5f66;
+}
+
+.publication-abstract {
+  background: none;
+  border-left: 0;
+  padding: 0;
+  color: #5a5f66;
+}
+
+.publication-links a {
+  margin-right: 0.75rem;
+  padding: 0;
+  color: #0b5cad;
+  background: none;
+  border-radius: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.9rem;
+}
+
+.publication-links a:hover {
+  background: none;
+  color: #084b8a;
+}
+
+@media (max-width: 768px) {
+  .publication-entry {
+    gap: 0.75rem;
+  }
+
+  .publication-cover {
+    width: 100%;
+    height: 180px;
+    margin-right: 0;
+  }
+}
+
+.publication-card-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 27px;
+  background-color: rgba(255, 255, 255, 1);
+  background-image: none;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 1);
+  border-width: 0px;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.15);
+}
+
+.publication-card {
+  border: 1px solid #e2e4e7;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.publication-card:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.publication-card-cover {
+  height: 160px;
+  background: none;
+  border-bottom: 1px solid #e2e4e7;
+}
+
+.publication-card-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #111111;
+}
+
+.publication-card-authors,
+.publication-card-venue {
+  color: #5a5f66;
+}
+
+.publication-card-links {
+  border-top: 1px solid #e2e4e7;
+}
+
+.publication-card-links a {
+  color: #0b5cad;
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.publication-card-links a:hover {
+  color: #084b8a;
+}

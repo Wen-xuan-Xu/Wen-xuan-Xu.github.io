@@ -6,7 +6,7 @@ secondary_name: "许文轩"
 #     name: MSDA Graduate Student
 
 email: "wenxuan.xu.gr@dartmouth.edu"
-cv_link: "/assets/Wenxuan_Xu_CV.pdf"
+cv_link: "https://drive.google.com/file/d/1580c6v1kHEWeP6WXWqBsfH710hI_6qiD/view?usp=sharing"
 gscholar: -SkvrSAAAAAJ
 github: Wen-xuan-Xu
 twitter: LesileXu
@@ -19,17 +19,17 @@ linkedin: wenxuan-xu-012878220
 short_bio_text_justify: false
 short_bio: >-
   <p>
-    I am Wenxuan Xu, a graduate student at <a href="https://home.dartmouth.edu/" target="_blank">Dartmouth College</a>. My primary focus is on selection methods, user behavior modeling in Virtual Reality. 
-    I also casually dabble in rendering—but I'm pro at League of Legends.
+    I am Wenxuan Xu, a Master's student in Computer Science at <a href="https://home.dartmouth.edu/" target="_blank">Dartmouth College</a>. 
+    My current research focuses on <strong>MLsys and AI infrastructure</strong>, specifically LLM inference acceleration, where I contribute to the <a href="https://github.com/sgl-project/sglang" target="_blank">sglang</a> project.
   </p>
   <p>
-    I earned my bachelor's degree in Information and Computing Science from <a href="https://www.xjtlu.edu.cn/en/" target="_blank">Xi'an Jiaotong-Liverpool University</a> (XJTLU). 
-    During my undergraduate studies, I was fortunate to work for two years in the X-CHI Lab
-    under the direct supervision of Professor <a href="https://scholar.google.com/citations?user=UJPH5ioAAAAJ&hl=en" target="_blank">Hai-Ning Liang</a>. 
-    Additionally, I served as a research intern in the <a href="https://pi.cs.tsinghua.edu.cn/" target="_blank">PI Lab</a> at <a href="https://www.tsinghua.edu.cn/en" target="_blank">Tsinghua University</a>, 
-    mentored by Professor <a href="https://pi.cs.tsinghua.edu.cn/lab/people/YuntaoWang/en/" target="_blank">Yuntao Wang</a>. 
-    I also collaborated closely with Professor <a href="https://vvise.iat.sfu.ca/people/wolfgang-stuerzlinger" target="_blank">Wolfgang Stuerzlinger</a> from <a href="https://www.sfu.ca/" target="_blank">Simon Fraser University</a> (SFU).
-    We continue to work together closely to this day.
+    Previously, I conducted research in Human-Computer Interaction (VR/AR). While I now consider this a detour, it provided me with valuable research experience. 
+    I collaborated with <a href="https://campbell.cs.dartmouth.edu/" target="_blank">Andrew Campbell</a>, <a href="https://scholar.google.com/citations?user=UJPH5ioAAAAJ&hl=en" target="_blank">Hai-Ning Liang</a>, 
+    <a href="https://vvise.iat.sfu.ca/people/wolfgang-stuerzlinger" target="_blank">Wolfgang Stuerzlinger</a>, and <a href="https://pi.cs.tsinghua.edu.cn/lab/people/YuntaoWang/en/" target="_blank">Yuntao Wang</a>, 
+    establishing a solid publication record.
+  </p>
+  <p>
+    I am <strong>actively seeking New Grad opportunities in AI infrastructure</strong>. If you are interested in my background, please feel free to contact me.
   </p>
 
 portrait_url: /assets/images/photos/portrait.jpg
