@@ -1,0 +1,35 @@
+{% if site.data.profile.open_source %}
+<div class="open-source-section">
+    {% for item in site.data.profile.open_source %}
+    <div class="open-source-item">
+        <div class="open-source-header">
+            <div class="open-source-title-row">
+                {% if item.logo %}
+                <img class="open-source-logo" src="{{ item.logo | relative_url }}" alt="{{ item.name }} logo">
+                {% endif %}
+                <div>
+                    {% if item.url %}
+                    <a class="open-source-name" href="{{ item.url }}" target="_blank">{{ item.name }}</a>
+                    {% else %}
+                    <span class="open-source-name">{{ item.name }}</span>
+                    {% endif %}
+                    {% if item.role %}
+                    <div class="open-source-role">{{ item.role }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% if item.links %}
+            <div class="open-source-links">
+                {% for link in item.links %}
+                <a href="{{ link[1] }}" target="_blank">[{{ link[0] }}]</a>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% if item.description %}
+        <div class="open-source-description">{{ item.description }}</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

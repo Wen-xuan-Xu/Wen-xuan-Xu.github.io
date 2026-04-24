@@ -35,8 +35,20 @@
             {% endif %}
 
             {% if site.data.profile.short_bio %}
+            <div class="bio-toolbar">
+                <button class="language-toggle" type="button" data-language-toggle data-target=".bio">
+                    中文
+                </button>
+            </div>
             <div class="bio mb-3">
-                {{ site.data.profile.short_bio }}
+                <div data-lang="en">
+                    {{ site.data.profile.short_bio }}
+                </div>
+                {% if site.data.profile.short_bio_zh %}
+                <div data-lang="zh" hidden>
+                    {{ site.data.profile.short_bio_zh }}
+                </div>
+                {% endif %}
             </div>
             {% endif %}
 
@@ -76,8 +88,17 @@
                 </a>
                 {% endif %}
 
-                {% if site.data.profile.cv_link %}
-                <a href="{{ site.data.profile.cv_link | relative_url }}" target="_blank">
+                {% if site.data.profile.cv_links %}
+                <span class="cv-link-group" aria-label="CV links">
+                    {% for cv in site.data.profile.cv_links %}
+                    <a class="cv-link" href="{{ cv.url }}" target="_blank">
+                        <i class="fas fa-file-alt"></i>
+                        <span class="contact-text">{{ cv.label }}</span>
+                    </a>
+                    {% endfor %}
+                </span>
+                {% elsif site.data.profile.cv_link %}
+                <a class="cv-link" href="{{ site.data.profile.cv_link | relative_url }}" target="_blank">
                     <i class="fas fa-file-alt"></i>
                     <span class="contact-text">CV</span>
                 </a>
@@ -86,6 +107,23 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll("[data-language-toggle]").forEach(function(button) {
+        button.addEventListener("click", function() {
+            var target = document.querySelector(button.dataset.target);
+            if (!target) return;
+            var nextLang = button.dataset.lang === "zh" ? "en" : "zh";
+            button.dataset.lang = nextLang;
+            button.textContent = nextLang === "zh" ? "English" : "中文";
+            target.querySelectorAll("[data-lang]").forEach(function(node) {
+                node.hidden = node.dataset.lang !== nextLang;
+            });
+        });
+    });
+});
+</script>
 
 {% if site.data.profile.wechat_qrcode %}
 <div class="modal fade" id="modal-wechat" tabindex="-1" aria-hidden="true">

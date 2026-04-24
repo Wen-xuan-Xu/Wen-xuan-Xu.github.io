@@ -23,10 +23,26 @@ navbar_title: Home
 <div class="section-title">News</div>
 {% include widgets/news_card.html limit=site.data.display.homepage.num_news %}
 
+{% if site.data.profile.open_source %}
+<div class="section-title">Open Source Contributions</div>
+{% include widgets/open_source_card.html %}
+{% endif %}
+
 {% if site.data.display.homepage.show_selected_publications %}
-<div class="section-title">Publications</div>
+<div class="section-title">
+    Selected Publications
+    <span class="section-title-note">
+        (see full on my
+        <a href="https://scholar.google.com/citations?user={{ site.data.profile.gscholar }}" target="_blank">Google Scholar</a>)
+    </span>
+</div>
 {% assign pubs = site.publications | sort: "date" | reverse | where: "selected", true %}
 {% include widgets/publication_card.html publications=pubs %}
+{% endif %}
+
+{% if site.data.profile.services %}
+<div class="section-title">Services</div>
+{% include widgets/services_card.html %}
 {% endif %}
 
 {% include widgets/debug_repo_name.html %}
@@ -36,3 +52,12 @@ navbar_title: Home
 <div style="width: 200px; height: 200px; margin: 0 auto;">
     <script type="text/javascript" id="clstr_globe" src="//clustrmaps.com/globe.js?d=WyQSf3utFxSkp0DrxtqRlKg3OzfVR2ca--jmaHk7pVM"></script>
 </div>
+
+{% if site.data.profile.sglang_mascot %}
+<a class="sglang-mascot"
+   href="{{ site.data.profile.sglang_mascot.url }}"
+   target="_blank"
+   aria-label="{{ site.data.profile.sglang_mascot.label }}">
+    <img src="{{ site.data.profile.sglang_mascot.image | relative_url }}" alt="{{ site.data.profile.sglang_mascot.label }}">
+</a>
+{% endif %}

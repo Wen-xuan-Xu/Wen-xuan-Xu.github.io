@@ -17,4 +17,5 @@ authors:
   - Hai-Ning Liang
 links:
   Paper: https://vvise.iat.sfu.ca/pubs/xu2025predictingray
+  Dataset: https://huggingface.co/datasets/Gilfoyle727/vr-ray-pointer-landing-pose
 ---

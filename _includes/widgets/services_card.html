@@ -1,0 +1,29 @@
+{% if site.data.profile.services %}
+<div class="services-section">
+    {% if site.data.profile.services.teaching %}
+    <div class="service-group">
+        <div class="service-group-title">Teaching</div>
+        {% for item in site.data.profile.services.teaching %}
+        <div class="service-item">
+            <span class="service-role">{{ item.role }}</span>,
+            <span class="service-course">{{ item.course }}</span>
+            {% if item.institution %}
+            <span class="service-muted">({{ item.institution }})</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if site.data.profile.services.reviewing %}
+    <div class="service-group">
+        <div class="service-group-title">Reviewing</div>
+        <div class="service-item">
+            {% for item in site.data.profile.services.reviewing %}
+            <span>{{ item.venue }}</span>{% unless forloop.last %}<span class="service-separator">/</span>{% endunless %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endif %}

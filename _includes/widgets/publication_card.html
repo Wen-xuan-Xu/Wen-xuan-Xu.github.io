@@ -20,11 +20,6 @@
                 (<span class="year">{{ publication.pub_date }}</span>)
                 {% endif %}
             </div>
-            {% if publication.abstract %}
-            <div class="publication-card-abstract">
-                {{ publication.abstract | truncate: 350 }}
-            </div>
-            {% endif %}
             <div class="publication-card-links">
                 {% if publication.links %}
                     {% for link in publication.links %}
@@ -61,4 +56,3 @@ function toggleAbstract(element) {
     }
 }
 </script>
-

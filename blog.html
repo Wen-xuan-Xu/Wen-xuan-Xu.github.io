@@ -1,0 +1,52 @@
+---
+layout: default
+title: Blog
+navbar_title: Blog
+permalink: /blog/
+---
+
+<div class="blog-header">
+    <div>
+        <h1 class="blog-page-title">Blog</h1>
+        <div class="blog-page-subtitle">Notes on systems, papers, and open-source work.</div>
+    </div>
+    <button class="language-toggle" type="button" data-language-toggle data-target=".blog-page">
+        中文
+    </button>
+</div>
+
+<div class="blog-page">
+    {% assign posts = site.blogs | sort: "date" | reverse %}
+    {% for post in posts %}
+    <article class="blog-post-card">
+        <div class="blog-post-date">{{ post.date | date: "%Y %b %d" }}</div>
+        <h2 class="blog-post-title">
+            <span data-lang="en">{{ post.title }}</span>
+            <span data-lang="zh" hidden>{{ post.title_zh | default: post.title }}</span>
+        </h2>
+        {% if post.summary or post.summary_zh %}
+        <div class="blog-post-summary">
+            <span data-lang="en">{{ post.summary }}</span>
+            <span data-lang="zh" hidden>{{ post.summary_zh | default: post.summary }}</span>
+        </div>
+        {% endif %}
+    </article>
+    {% endfor %}
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll("[data-language-toggle]").forEach(function(button) {
+        button.addEventListener("click", function() {
+            var target = document.querySelector(button.dataset.target);
+            if (!target) return;
+            var nextLang = button.dataset.lang === "zh" ? "en" : "zh";
+            button.dataset.lang = nextLang;
+            button.textContent = nextLang === "zh" ? "English" : "中文";
+            target.querySelectorAll("[data-lang]").forEach(function(node) {
+                node.hidden = node.dataset.lang !== nextLang;
+            });
+        });
+    });
+});
+</script>

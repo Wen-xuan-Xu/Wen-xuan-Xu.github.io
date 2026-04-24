@@ -6,7 +6,11 @@ secondary_name: "许文轩"
 #     name: MSDA Graduate Student
 
 email: "wenxuan.xu.gr@dartmouth.edu"
-cv_link: "https://drive.google.com/file/d/1580c6v1kHEWeP6WXWqBsfH710hI_6qiD/view?usp=sharing"
+cv_links:
+  - label: "CV EN"
+    url: "https://drive.google.com/file/d/1WydU5Ie44A2QtEbnIq0VKVeDI5OC-Ryh/view?usp=drive_link"
+  - label: "CV 中文"
+    url: "https://drive.google.com/file/d/1wwMCTDQ1gruBIOn8ZHnvWSFYy6nq83ho/view?usp=sharing"
 gscholar: -SkvrSAAAAAJ
 github: Wen-xuan-Xu
 twitter: LesileXu
@@ -19,17 +23,29 @@ linkedin: wenxuan-xu-012878220
 short_bio_text_justify: false
 short_bio: >-
   <p>
-    I am Wenxuan Xu, a Master's student in Computer Science at <a href="https://home.dartmouth.edu/" target="_blank">Dartmouth College</a>. 
-    My current research focuses on <strong>MLsys and AI infrastructure</strong>, specifically LLM inference acceleration, where I contribute to the <a href="https://github.com/sgl-project/sglang" target="_blank">sglang</a> project.
+    I am Wenxuan Xu, a Master's student in Computer Science at <a href="https://home.dartmouth.edu/" target="_blank">Dartmouth College</a>. My current focus is <strong>AI infrastructure</strong>, especially <strong>LLM inference acceleration</strong>, serving systems, CUDA kernels, and quantization.
   </p>
   <p>
-    Previously, I conducted research in Human-Computer Interaction (VR/AR). While I now consider this a detour, it provided me with valuable research experience. 
-    I collaborated with <a href="https://campbell.cs.dartmouth.edu/" target="_blank">Andrew Campbell</a>, <a href="https://scholar.google.com/citations?user=UJPH5ioAAAAJ&hl=en" target="_blank">Hai-Ning Liang</a>, 
-    <a href="https://vvise.iat.sfu.ca/people/wolfgang-stuerzlinger" target="_blank">Wolfgang Stuerzlinger</a>, and <a href="https://pi.cs.tsinghua.edu.cn/lab/people/YuntaoWang/en/" target="_blank">Yuntao Wang</a>, 
-    establishing a solid publication record.
+    I previously worked on Human-Computer Interaction and VR/AR with <a href="https://campbell.cs.dartmouth.edu/" target="_blank">Andrew Campbell</a>, <a href="https://scholar.google.com/citations?user=UJPH5ioAAAAJ&hl=en" target="_blank">Hai-Ning Liang</a>, <a href="https://vvise.iat.sfu.ca/people/wolfgang-stuerzlinger" target="_blank">Wolfgang Stuerzlinger</a>, and <a href="https://pi.cs.tsinghua.edu.cn/lab/people/YuntaoWang/en/" target="_blank">Yuntao Wang</a>. I eventually felt that HCI research was dead water for me, both in future prospects and in practical upside. Still, that detour gave me real research training and led to works such as <strong>LENS</strong>.
   </p>
   <p>
-    I am <strong>actively seeking New Grad opportunities in AI infrastructure</strong>. If you are interested in my background, please feel free to contact me.
+    In this era, joining industry and building real systems is clearly the better choice for me. Influenced by friends who were already working on infrastructure, I started moving into LLM infra and inference acceleration. I am serious about it: I keep learning, building, and contributing to projects such as <a href="https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu" target="_blank">SGLang</a> and <a href="https://github.com/Wen-xuan-Xu/Literinfer" target="_blank">LiteInfer</a>.
+  </p>
+  <p class="bio-callout">
+    I am actively seeking New Grad roles in AI infrastructure, especially LLM inference acceleration. I am excited about ambitious startups and challenging systems work. If my background looks relevant, please contact me.
+  </p>
+short_bio_zh: >-
+  <p>
+    我是许文轩，目前是 <a href="https://home.dartmouth.edu/" target="_blank">Dartmouth College</a> 计算机科学硕士生。现在主要关注 <strong>AI infrastructure</strong>，尤其是 <strong>LLM inference acceleration</strong>、serving systems、CUDA kernels 和 quantization。
+  </p>
+  <p>
+    我之前和 <a href="https://campbell.cs.dartmouth.edu/" target="_blank">Andrew Campbell</a>、<a href="https://scholar.google.com/citations?user=UJPH5ioAAAAJ&hl=en" target="_blank">Hai-Ning Liang</a>、<a href="https://vvise.iat.sfu.ca/people/wolfgang-stuerzlinger" target="_blank">Wolfgang Stuerzlinger</a>、<a href="https://pi.cs.tsinghua.edu.cn/lab/people/YuntaoWang/en/" target="_blank">Yuntao Wang</a> 做过 HCI 和 VR/AR 方向的研究。后来我逐渐感觉 HCI research area 对我来说无论前途还是钱途都是死水一潭。不过这段 detour 也给了我真正的 research training，并产出了 <strong>LENS</strong> 这样的工作。
+  </p>
+  <p>
+    在这个时代，我觉得加入业界、做真实系统显然是更适合我的选择。在朋友的影响下，我开始转向 LLM infra 和 inference acceleration。我对此很认真：我一直在学习、构建，也在参与 <a href="https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu" target="_blank">SGLang</a> 和 <a href="https://github.com/Wen-xuan-Xu/Literinfer" target="_blank">LiteInfer</a> 这样的项目。
+  </p>
+  <p class="bio-callout">
+    我正在积极寻找 AI infrastructure 方向的 New Grad 机会，尤其是 LLM inference acceleration。我很想加入有前途的 startup，做有挑战的 systems work。如果你对我的背景感兴趣，请联系我。
   </p>
 
 portrait_url: /assets/images/photos/portrait.jpg
@@ -57,6 +73,50 @@ education:
       <div class="education-items">
         • First Class Honours <br/>
       </div>
+
+services:
+  teaching:
+    - course: "COSC 74: Machine Learning and Statistical Data Analysis"
+      role: Teaching Assistant
+      institution: Dartmouth College
+  reviewing:
+    - venue: "CHI 2025 Late-Breaking Work"
+    - venue: "CHI PLAY 2025 Full Papers"
+    - venue: "ISMAR 2025 Papers"
+    - venue: "SUI 2025 Papers"
+
+open_source:
+  - name: SGLang
+    url: https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu
+    logo: /assets/images/badges/sglangicon.png
+    role: Open-source contributor
+    description: >-
+      I contribute to the SGLang community through community profile work,
+      small bug fixes, and documentation improvements. I am currently learning
+      NVFP4, PD disaggregation, and WideEP, with the long-term goal of growing
+      into a strong LLM systems engineer and contributing to more roadmap-level
+      work. For full contribution history, please check my GitHub activity.
+    links:
+      PRs: https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu
+  - name: LiteInfer
+    url: https://github.com/Wen-xuan-Xu/Literinfer
+    role: Project developer
+    description: >-
+      A high-performance C++/CUDA LLM inference engine developed on top of
+      KuiperLlama / KuiperInfer. LiteInfer extends the educational inference
+      framework into a more complete serving stack for decoder-only LLMs,
+      including hand-written CUDA kernels, vLLM-style paged KV cache,
+      continuous batching, request scheduling, and INT8 / AWQ INT4 weight-only
+      quantization. The project supports Llama-3 and Qwen-family models and is
+      designed as a transparent systems-learning codebase without PyTorch
+      runtime, external attention libraries, or external quantization kernels.
+    links:
+      GitHub: https://github.com/Wen-xuan-Xu/Literinfer
+
+sglang_mascot:
+  image: /assets/images/badges/sglanggirlicon.png
+  url: https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu
+  label: View my SGLang PRs
 
 # experience:
 # - name: Peking University
