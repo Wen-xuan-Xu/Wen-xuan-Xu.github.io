@@ -1,0 +1,31 @@
+{% if site.data.profile.industry_experience %}
+<div class="industry-experience-section">
+    {% for item in site.data.profile.industry_experience %}
+    <div class="industry-experience-item">
+        <div class="industry-experience-logo-container">
+            {% if item.logo %}
+            <img src="{{ item.logo | relative_url }}" alt="{{ item.name }} logo" class="industry-experience-logo">
+            {% endif %}
+        </div>
+        <div class="industry-experience-content">
+            <div class="industry-experience-header">
+                {% if item.url %}
+                <a class="industry-experience-name" href="{{ item.url }}" target="_blank">{{ item.name }}</a>
+                {% else %}
+                <span class="industry-experience-name">{{ item.name }}</span>
+                {% endif %}
+                {% if item.date %}
+                <span class="industry-experience-date">{{ item.date }}</span>
+                {% endif %}
+            </div>
+            {% if item.role %}
+            <div class="industry-experience-role"><em>{{ item.role }}</em></div>
+            {% endif %}
+            {% if item.description %}
+            <div class="industry-experience-description">{{ item.description }}</div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

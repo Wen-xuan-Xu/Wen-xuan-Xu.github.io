@@ -20,8 +20,13 @@ navbar_title: Home
     {% endfor %}
 </div>
 
+{% if site.data.profile.industry_experience %}
+<div class="section-title">Industry Experience</div>
+{% include widgets/industry_experience_card.html %}
+{% endif %}
+
 <div class="section-title">News</div>
-{% include widgets/news_card.html limit=site.data.display.homepage.num_news %}
+{% include widgets/news_card.html %}
 
 {% if site.data.profile.open_source %}
 <div class="section-title">Open Source Contributions</div>
@@ -44,10 +49,6 @@ navbar_title: Home
 <div class="section-title">Services</div>
 {% include widgets/services_card.html %}
 {% endif %}
-
-{% include widgets/debug_repo_name.html %}
-
-{% include widgets/debug_url.html %}
 
 <div style="width: 200px; height: 200px; margin: 0 auto;">
     <script type="text/javascript" id="clstr_globe" src="//clustrmaps.com/globe.js?d=WyQSf3utFxSkp0DrxtqRlKg3OzfVR2ca--jmaHk7pVM"></script>

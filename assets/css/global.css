@@ -782,6 +782,10 @@ a:hover,
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35rem 0.5rem;
     margin-top: 2rem;
     margin-bottom: 1rem;
     padding-bottom: 0.4rem;
@@ -804,6 +808,68 @@ a:hover,
 
 .section-title-note a {
     color: var(--link-minimal);
+}
+
+.industry-experience-section {
+    margin-bottom: 2rem;
+}
+
+.industry-experience-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.2rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.industry-experience-logo-container {
+    width: 86px;
+    min-width: 86px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.industry-experience-logo {
+    width: 82px;
+    max-height: 50px;
+    object-fit: contain;
+}
+
+.industry-experience-content {
+    flex: 1;
+}
+
+.industry-experience-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.35rem 1rem;
+}
+
+.industry-experience-name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.industry-experience-date {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+}
+
+.industry-experience-role {
+    color: var(--text-primary);
+    font-size: 0.98rem;
+    margin-top: 0.15rem;
+}
+
+.industry-experience-description {
+    color: var(--text-muted);
+    font-size: 0.96rem;
+    line-height: 1.55;
+    margin-top: 0.35rem;
 }
 
 .open-source-section {
@@ -985,8 +1051,20 @@ a:hover,
 }
 
 .news-section {
-    max-height: none;
-    padding-right: 0;
+    max-height: 260px;
+    overflow-y: auto;
+    padding-right: 0.65rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-subtle) transparent;
+}
+
+.news-section::-webkit-scrollbar {
+    width: 6px;
+}
+
+.news-section::-webkit-scrollbar-thumb {
+    background: var(--border-subtle);
+    border-radius: 999px;
 }
 
 .news-item {
@@ -1023,9 +1101,21 @@ a:hover,
 
 @media (max-width: 768px) {
     .section-title-note {
-        display: block;
         margin-left: 0;
         margin-top: 0.25rem;
+    }
+
+    .industry-experience-item {
+        gap: 0.85rem;
+    }
+
+    .industry-experience-logo-container {
+        width: 70px;
+        min-width: 70px;
+    }
+
+    .industry-experience-logo {
+        width: 68px;
     }
 
     .open-source-header {

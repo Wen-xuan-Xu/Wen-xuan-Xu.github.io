@@ -29,10 +29,7 @@ short_bio: >-
     I previously worked on Human-Computer Interaction and VR/AR with <a href="https://campbell.cs.dartmouth.edu/" target="_blank">Andrew Campbell</a>, <a href="https://scholar.google.com/citations?user=UJPH5ioAAAAJ&hl=en" target="_blank">Hai-Ning Liang</a>, <a href="https://vvise.iat.sfu.ca/people/wolfgang-stuerzlinger" target="_blank">Wolfgang Stuerzlinger</a>, and <a href="https://pi.cs.tsinghua.edu.cn/lab/people/YuntaoWang/en/" target="_blank">Yuntao Wang</a>. I eventually felt that HCI research was dead water for me, both in future prospects and in practical upside. Still, that detour gave me real research training and led to works such as <strong>LENS</strong>.
   </p>
   <p>
-    In this era, joining industry and building real systems is clearly the better choice for me. Influenced by friends who were already working on infrastructure, I started moving into LLM infra and inference acceleration. I am serious about it: I keep learning, building, and contributing to projects such as <a href="https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu" target="_blank">SGLang</a> and <a href="https://github.com/Wen-xuan-Xu/Literinfer" target="_blank">LiteInfer</a>.
-  </p>
-  <p class="bio-callout">
-    I am actively seeking New Grad roles in AI infrastructure, especially LLM inference acceleration. I am excited about ambitious startups and challenging systems work. If my background looks relevant, please contact me.
+    In this era, joining industry and building real systems is clearly the better choice for me. Influenced by friends who were already working on infrastructure, I started moving into LLM infra and inference acceleration. I am serious about it: I keep learning, building, and contributing to projects such as <a href="https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu" target="_blank">SGLang</a> and <a href="https://github.com/Wen-xuan-Xu/Literinfer" target="_blank">LiteInfer</a>. I will join <a href="https://www.elastix.ai/" target="_blank">Elastix AI</a> as an <strong>AI Performance Engineer</strong> in July 2026.
   </p>
 short_bio_zh: >-
   <p>
@@ -42,10 +39,7 @@ short_bio_zh: >-
     我之前和 <a href="https://campbell.cs.dartmouth.edu/" target="_blank">Andrew Campbell</a>、<a href="https://scholar.google.com/citations?user=UJPH5ioAAAAJ&hl=en" target="_blank">Hai-Ning Liang</a>、<a href="https://vvise.iat.sfu.ca/people/wolfgang-stuerzlinger" target="_blank">Wolfgang Stuerzlinger</a>、<a href="https://pi.cs.tsinghua.edu.cn/lab/people/YuntaoWang/en/" target="_blank">Yuntao Wang</a> 做过 HCI 和 VR/AR 方向的研究。后来我逐渐感觉 HCI research area 对我来说无论前途还是钱途都是死水一潭。不过这段 detour 也给了我真正的 research training，并产出了 <strong>LENS</strong> 这样的工作。
   </p>
   <p>
-    在这个时代，我觉得加入业界、做真实系统显然是更适合我的选择。在朋友的影响下，我开始转向 LLM infra 和 inference acceleration。我对此很认真：我一直在学习、构建，也在参与 <a href="https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu" target="_blank">SGLang</a> 和 <a href="https://github.com/Wen-xuan-Xu/Literinfer" target="_blank">LiteInfer</a> 这样的项目。
-  </p>
-  <p class="bio-callout">
-    我正在积极寻找 AI infrastructure 方向的 New Grad 机会，尤其是 LLM inference acceleration。我很想加入有前途的 startup，做有挑战的 systems work。如果你对我的背景感兴趣，请联系我。
+    在这个时代，我觉得加入业界、做真实系统显然是更适合我的选择。在朋友的影响下，我开始转向 LLM infra 和 inference acceleration。我对此很认真：我一直在学习、构建，也在参与 <a href="https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu" target="_blank">SGLang</a> 和 <a href="https://github.com/Wen-xuan-Xu/Literinfer" target="_blank">LiteInfer</a> 这样的项目。2026 年 7 月，我将加入 <a href="https://www.elastix.ai/" target="_blank">Elastix AI</a>，担任 <strong>AI Performance Engineer</strong>。
   </p>
 
 portrait_url: /assets/images/photos/portrait.jpg
@@ -74,6 +68,15 @@ education:
         • First Class Honours <br/>
       </div>
 
+industry_experience:
+  - name: Elastix AI
+    url: https://www.elastix.ai/
+    logo: /assets/images/badges/elastix_ai.webp
+    role: AI Performance Engineer
+    date: Starting Jul 2026
+    description: >-
+      AI performance engineering for efficient AI inference systems.
+
 services:
   teaching:
     - course: "COSC 74: Machine Learning and Statistical Data Analysis"
@@ -84,6 +87,7 @@ services:
     - venue: "CHI PLAY 2025 Full Papers"
     - venue: "ISMAR 2025 Papers"
     - venue: "SUI 2025 Papers"
+    - venue: "SUI 2026 Papers"
 
 open_source:
   - name: SGLang

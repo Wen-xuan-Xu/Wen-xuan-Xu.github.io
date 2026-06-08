@@ -1,11 +1,20 @@
 <div class="news-outer">
     <div class="news-section">
         {% assign sorted_news = site.news | sort: "date" | reverse %}
+        {% if include.limit %}
         {% for item in sorted_news limit:include.limit %}
         <div class="news-item">
             <div class="news-date">{{ item.date | date: "%Y %b %d" }}</div>
             <div class="news-title">{{ item.title }}</div>
         </div>
         {% endfor %}
+        {% else %}
+        {% for item in sorted_news %}
+        <div class="news-item">
+            <div class="news-date">{{ item.date | date: "%Y %b %d" }}</div>
+            <div class="news-title">{{ item.title }}</div>
+        </div>
+        {% endfor %}
+        {% endif %}
     </div>
 </div>
