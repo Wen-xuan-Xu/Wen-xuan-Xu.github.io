@@ -48,9 +48,11 @@ short_bio_zh: >-
 portrait_url: /assets/images/photos/portrait.jpg
 education:
   - name: Dartmouth College
+    logo: /assets/images/badges/dartmouth_shield.png
     degree: M.S. in Computer Science
     date: 2024 – 2026
   - name: University of Liverpool / Xi'an Jiaotong-Liverpool University
+    logo: /assets/images/badges/liverpool_logo.png
     degree: B.S. in Information and Computing Science
     date: 2020 – 2024
     note: First Class Honours
@@ -110,11 +112,9 @@ open_source:
       "#1159": https://github.com/vllm-project/guidellm/pull/1159
       "#1264": https://github.com/vllm-project/guidellm/pull/1264
 
-misc:
-  image: /assets/images/photos/cat.jpg
-  alt: My orange tabby cat sitting on a desk
-  text: >-
-    Outside of work: my orange cat, who supervises every benchmark run from the desk.
+cat_mascot:
+  image: /assets/images/photos/cat-mascot.jpg
+  label: My cat
 
 sglang_mascot:
   image: /assets/images/badges/sglanggirlicon.png

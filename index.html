@@ -8,10 +8,13 @@ navbar_title: Home
 <div class="section-title">Education</div>
 <div class="row-list">
     {% for item in site.data.profile.education %}
+    <div class="row-entry">
+    <div class="row-logo">{% if item.logo %}<img src="{{ item.logo | relative_url }}" alt="{{ item.name }} logo">{% endif %}</div>
     <div class="row-item">
         <span class="what">{{ item.degree }}, {{ item.name }}</span>
         <span class="when">{{ item.date }}</span>
         {% if item.note %}<span class="sub">{{ item.note }}</span>{% endif %}
+    </div>
     </div>
     {% endfor %}
 </div>
@@ -20,10 +23,13 @@ navbar_title: Home
 <div class="section-title">Industry Experience</div>
 <div class="row-list">
     {% for item in site.data.profile.industry_experience %}
+    <div class="row-entry">
+    <div class="row-logo">{% if item.logo %}<img src="{{ item.logo | relative_url }}" alt="{{ item.name }} logo">{% endif %}</div>
     <div class="row-item">
         <span class="what">{{ item.role }}, <a href="{{ item.url }}" target="_blank">{{ item.name }}</a></span>
         <span class="when">{{ item.date }}</span>
         {% if item.description %}<span class="sub">{{ item.description }}</span>{% endif %}
+    </div>
     </div>
     {% endfor %}
 </div>
@@ -54,23 +60,19 @@ navbar_title: Home
 {% include widgets/services_card.html %}
 {% endif %}
 
-{% if site.data.profile.misc %}
-<div class="section-title">Misc</div>
-<figure class="misc">
-    <img src="{{ site.data.profile.misc.image | relative_url }}" alt="{{ site.data.profile.misc.alt }}" loading="lazy">
-    <figcaption>{{ site.data.profile.misc.text }}</figcaption>
-</figure>
-{% endif %}
-
 <div class="visitor-globe">
     <script type="text/javascript" id="clstr_globe" src="//clustrmaps.com/globe.js?d=WyQSf3utFxSkp0DrxtqRlKg3OzfVR2ca--jmaHk7pVM"></script>
 </div>
 
-{% if site.data.profile.sglang_mascot %}
-<a class="sglang-mascot"
-   href="{{ site.data.profile.sglang_mascot.url }}"
-   target="_blank"
-   aria-label="{{ site.data.profile.sglang_mascot.label }}">
-    <img src="{{ site.data.profile.sglang_mascot.image | relative_url }}" alt="{{ site.data.profile.sglang_mascot.label }}">
-</a>
-{% endif %}
+<div class="mascots">
+    {% if site.data.profile.cat_mascot %}
+    <span class="mascot mascot-cat" title="{{ site.data.profile.cat_mascot.label }}">
+        <img src="{{ site.data.profile.cat_mascot.image | relative_url }}" alt="{{ site.data.profile.cat_mascot.label }}">
+    </span>
+    {% endif %}
+    {% if site.data.profile.sglang_mascot %}
+    <a class="mascot" href="{{ site.data.profile.sglang_mascot.url }}" target="_blank" aria-label="{{ site.data.profile.sglang_mascot.label }}">
+        <img src="{{ site.data.profile.sglang_mascot.image | relative_url }}" alt="{{ site.data.profile.sglang_mascot.label }}">
+    </a>
+    {% endif %}
+</div>

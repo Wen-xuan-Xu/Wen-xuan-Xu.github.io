@@ -128,10 +128,6 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0
 .service-muted, .service-separator { color: var(--muted); }
 .service-separator { margin: 0 8px; }
 
-/* misc / cat */
-.misc { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; }
-.misc img { width: 220px; max-width: 100%; border-radius: 10px; display: block; }
-.misc figcaption { font-size: 15px; color: var(--ink-2); flex: 1 1 240px; }
 
 /* blog list */
 .blog-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 28px; }
@@ -142,18 +138,26 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0
 .blog-post-title { font: 700 20px/1.4 var(--sans); margin: 2px 0 4px; }
 .blog-post-summary { color: var(--ink-2); font-size: 15px; }
 
-/* SGLang girl mascot: floats in the corner with a slow bob */
-.sglang-mascot {
-  position: fixed; right: 20px; bottom: 20px; z-index: 1030;
-  width: 88px; height: 88px; border-radius: 50%; overflow: hidden;
+/* corner mascots: my cat and SGLang girl, bobbing out of phase */
+.mascots { position: fixed; right: 20px; bottom: 20px; z-index: 1030; display: flex; gap: 12px; align-items: flex-end; }
+.mascot {
+  width: 80px; height: 80px; border-radius: 50%; overflow: hidden; display: block;
   background: var(--accent-soft); border: 2px solid var(--accent);
   box-shadow: 0 8px 24px rgba(20, 20, 19, 0.16);
   animation: mascot-bob 3.2s ease-in-out infinite;
 }
-.sglang-mascot:hover { border-color: var(--accent); animation-play-state: paused; transform: scale(1.06); }
-.sglang-mascot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+a.mascot, a.mascot:hover { border: 2px solid var(--accent); }
+.mascot-cat { animation-delay: -1.6s; }
+.mascot:hover { animation-play-state: paused; transform: scale(1.06); }
+.mascot img { width: 100%; height: 100%; object-fit: cover; display: block; }
 @keyframes mascot-bob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-8px) rotate(2deg); } }
-@media (prefers-reduced-motion: reduce) { .sglang-mascot { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .mascot { animation: none; } }
+
+/* education / industry rows with a small logo */
+.row-entry { display: flex; gap: 16px; align-items: flex-start; }
+.row-logo { flex: 0 0 64px; height: 44px; display: flex; align-items: center; justify-content: center; }
+.row-logo img { max-width: 64px; max-height: 44px; object-fit: contain; }
+.row-entry .row-item { flex: 1 1 auto; min-width: 0; }
 
 /* footer */
 .footer { border-top: 1px solid var(--line); padding: 20px 0 40px; font-size: 14px; color: var(--muted); background: transparent; }
@@ -168,7 +172,9 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0
   .news-section { grid-template-columns: 1fr; gap: 0 0; }
   .news-date { margin-top: 10px; }
   .row-item { grid-template-columns: 1fr; }
-  .sglang-mascot { width: 64px; height: 64px; right: 12px; bottom: 12px; }
+  .mascots { right: 12px; bottom: 12px; gap: 8px; }
+  .mascot { width: 56px; height: 56px; }
+  .row-logo { flex-basis: 44px; }
 }
 .news-outer, .news-item { display: contents; }
 
