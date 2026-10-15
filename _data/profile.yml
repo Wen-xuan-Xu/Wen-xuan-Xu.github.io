@@ -92,19 +92,11 @@ open_source:
       PRs: https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu
   - name: LiteInfer
     url: https://github.com/Wen-xuan-Xu/Literinfer
-    role: Project developer
+    role: Toy project
     description: >-
-      A high-performance C++/CUDA LLM inference engine developed on top of
-      KuiperLlama / KuiperInfer. LiteInfer extends the educational inference
-      framework into a more complete serving stack for decoder-only LLMs,
-      including hand-written CUDA kernels, vLLM-style paged KV cache,
-      continuous batching, request scheduling, and INT8 / AWQ INT4 weight-only
-      quantization. The project supports Llama-3 and Qwen-family models and is
-      designed as a transparent systems-learning codebase without PyTorch
-      runtime, external attention libraries, or external quantization kernels.
+      A toy C++/CUDA LLM inference engine I wrote for practice.
     links:
       GitHub: https://github.com/Wen-xuan-Xu/Literinfer
-
   - name: GuideLLM (vLLM project)
     url: https://github.com/vllm-project/guidellm/pulls?q=is%3Apr+author%3Awenxuan-elastix
     role: Open-source contributor
