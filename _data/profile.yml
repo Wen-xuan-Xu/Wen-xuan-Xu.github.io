@@ -112,10 +112,6 @@ open_source:
       deployments. I added pass-through of backend per-request metrics into the
       compiled benchmark stats (merged), and I am adding prefix-cache hit rate
       and cached-token metrics, per run and per turn.
-    links:
-      PRs: https://github.com/vllm-project/guidellm/pulls?q=is%3Apr+author%3Awenxuan-elastix
-      "#1159": https://github.com/vllm-project/guidellm/pull/1159
-      "#1264": https://github.com/vllm-project/guidellm/pull/1264
 
 cat_mascot:
   image: /assets/images/photos/cat-mascot.jpg

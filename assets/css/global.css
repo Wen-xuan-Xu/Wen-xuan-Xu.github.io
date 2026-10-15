@@ -53,7 +53,7 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0
 /* profile */
 .profile { display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start; }
 .profile-photo { flex: 0 0 168px; }
-.portrait { width: 168px; height: 168px; object-fit: cover; border-radius: 10px; display: block; }
+.portrait { width: 168px; height: 224px; object-fit: cover; border-radius: 10px; display: block; }
 .portrait-caption { font-size: 12px; color: var(--muted); margin-top: 6px; }
 .profile-content { flex: 1 1 420px; min-width: 0; }
 .name { font: 700 36px/1.2 var(--sans); margin: 0 0 2px; }
@@ -169,7 +169,7 @@ a.mascot, a.mascot:hover { border: 2px solid var(--accent); }
 @media (max-width: 640px) {
   .container { padding-top: 56px; }
   .profile-photo { flex-basis: 120px; }
-  .portrait { width: 120px; height: 120px; }
+  .portrait { width: 120px; height: 160px; }
   .name { font-size: 26px; }
   .news-section { grid-template-columns: 1fr; gap: 0 0; }
   .news-date { margin-top: 10px; }
