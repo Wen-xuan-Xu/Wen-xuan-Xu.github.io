@@ -67,6 +67,13 @@
                 </a>
                 {% endif %}
 
+                {% if site.data.profile.github_work %}
+                <a href="https://github.com/{{ site.data.profile.github_work }}" target="_blank">
+                    <i class="fab fa-github"></i>
+                    <span class="contact-text">GitHub (work)</span>
+                </a>
+                {% endif %}
+
                 {% if site.data.profile.twitter %}
                 <a href="https://twitter.com/{{ site.data.profile.twitter }}" target="_blank">
                     <i class="fab fa-twitter"></i>
