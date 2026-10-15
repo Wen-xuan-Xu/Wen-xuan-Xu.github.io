@@ -64,15 +64,15 @@ navbar_title: Home
     <script type="text/javascript" id="clstr_globe" src="//clustrmaps.com/globe.js?d=WyQSf3utFxSkp0DrxtqRlKg3OzfVR2ca--jmaHk7pVM"></script>
 </div>
 
+{% if site.data.profile.mascots %}
 <div class="mascots">
-    {% if site.data.profile.cat_mascot %}
-    <span class="mascot mascot-cat" title="{{ site.data.profile.cat_mascot.label }}">
-        <img src="{{ site.data.profile.cat_mascot.image | relative_url }}" alt="{{ site.data.profile.cat_mascot.label }}">
-    </span>
+    {% for m in site.data.profile.mascots %}
+    {% if m.url %}
+    <a class="mascot" href="{{ m.url }}" target="_blank" aria-label="{{ m.label }}"><img src="{{ m.image | relative_url }}" alt="{{ m.label }}"></a>
+    {% else %}
+    <span class="mascot" title="{{ m.label }}"><img src="{{ m.image | relative_url }}" alt="{{ m.label }}"></span>
     {% endif %}
-    {% if site.data.profile.sglang_mascot %}
-    <a class="mascot" href="{{ site.data.profile.sglang_mascot.url }}" target="_blank" aria-label="{{ site.data.profile.sglang_mascot.label }}">
-        <img src="{{ site.data.profile.sglang_mascot.image | relative_url }}" alt="{{ site.data.profile.sglang_mascot.label }}">
-    </a>
-    {% endif %}
+    {% endfor %}
 </div>
+{% endif %}
+

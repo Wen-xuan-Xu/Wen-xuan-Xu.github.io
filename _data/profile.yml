@@ -50,6 +50,8 @@ short_bio_zh: >-
   </p>
 
 portrait_url: /assets/images/photos/portrait.jpg
+portrait_caption: >-
+  Photo by <a href="https://scholar.google.com/citations?user=VL1nzesAAAAJ&hl=en" target="_blank">Liz Zhang</a>
 
 education:
   - name: Dartmouth College
@@ -69,8 +71,9 @@ industry_experience:
     role: AI Performance Engineer
     date: Jul 2026 - Present
     description: >-
-      LLM inference performance engineering: serving benchmarks, profiling,
-      KV cache analysis, and benchmark CI for production inference.
+      I optimize LLM serving on FPGA-based hardware, including MoE, speculative
+      decoding, and KV caching for hybrid models, and build the benchmark CI
+      that measures it.
 
 services:
   teaching:
@@ -102,14 +105,15 @@ open_source:
     links:
       GitHub: https://github.com/Wen-xuan-Xu/Literinfer
 
-cat_mascot:
-  image: /assets/images/photos/cat-mascot.jpg
-  label: My cat
-
-sglang_mascot:
-  image: /assets/images/badges/sglanggirlicon.png
-  url: https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu
-  label: View my SGLang PRs
+# corner mascots, left to right
+mascots:
+  - image: /assets/images/photos/cat-mascot.jpg
+    label: My cat
+  - image: /assets/images/photos/dog-mascot.jpg
+    label: My dog
+  - image: /assets/images/badges/sglanggirlicon.png
+    label: View my SGLang PRs
+    url: https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu
 
 # experience:
 # - name: Peking University
