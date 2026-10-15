@@ -88,32 +88,19 @@ open_source:
   - name: SGLang
     url: https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu
     logo: /assets/images/badges/sglangicon.png
-    role: Open-source contributor
-    description: >-
-      I contribute to the SGLang community through community profile work,
-      small bug fixes, and documentation improvements. I am currently learning
-      NVFP4, PD disaggregation, and WideEP, with the long-term goal of growing
-      into a strong LLM systems engineer and contributing to more roadmap-level
-      work. For full contribution history, please check my GitHub activity.
+    description: Bug fixes, docs, and community work.
     links:
       PRs: https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu
-  - name: LiteInfer
-    url: https://github.com/Wen-xuan-Xu/Literinfer
-    role: Toy project
-    description: >-
-      A toy C++/CUDA LLM inference engine I wrote for practice.
-    links:
-      GitHub: https://github.com/Wen-xuan-Xu/Literinfer
   - name: GuideLLM (vLLM project)
     url: https://github.com/vllm-project/guidellm/pulls?q=is%3Apr+author%3Awenxuan-elastix
-    role: Open-source contributor
-    description: >-
-      GuideLLM is the vLLM project's tool for benchmarking and evaluating LLM
-      deployments. I added pass-through of backend per-request metrics into the
-      compiled benchmark stats (merged), and I am adding prefix-cache hit rate
-      and cached-token metrics, per run and per turn.
+    description: Per-request and prefix-cache metrics in benchmark reports.
     links:
       PRs: https://github.com/vllm-project/guidellm/pulls?q=is%3Apr+author%3Awenxuan-elastix
+  - name: LiteInfer
+    url: https://github.com/Wen-xuan-Xu/Literinfer
+    description: A toy C++/CUDA inference engine, written for practice.
+    links:
+      GitHub: https://github.com/Wen-xuan-Xu/Literinfer
 
 cat_mascot:
   image: /assets/images/photos/cat-mascot.jpg
