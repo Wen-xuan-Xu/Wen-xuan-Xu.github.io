@@ -1,5 +1,19 @@
 <footer class="footer">
     <div class="container">
-        © {{ site.time | date: "%Y" }} Wenxuan Xu · built on <a href="https://github.com/luost26/academic-homepage" target="_blank">academic-homepage</a>
+        Last updated <time id="last-updated" datetime="{{ site.time | date_to_xmlschema }}">{{ site.time | date: "%B %-d, %Y" }}</time> · built on <a href="https://github.com/luost26/academic-homepage" target="_blank">academic-homepage</a>
     </div>
 </footer>
+<script>
+(function () {
+    // GitHub Pages rebuilds only on push, so the build time is the last update time.
+    var t = document.getElementById("last-updated");
+    var box = document.getElementById("stale-notice");
+    if (!t || !box) return;
+    var days = (Date.now() - new Date(t.getAttribute("datetime")).getTime()) / 86400000;
+    if (days > 180) {
+        var months = Math.floor(days / 30);
+        box.textContent = "This page was last updated " + months + " months ago, so some of it may be out of date.";
+        box.hidden = false;
+    }
+})();
+</script>
