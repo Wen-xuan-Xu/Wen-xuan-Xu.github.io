@@ -26,26 +26,31 @@ linkedin: wenxuan-xu-012878220
 short_bio_text_justify: false
 short_bio: >-
   <p>
-    I am Wenxuan Xu, an <strong>AI Performance Engineer</strong> at <a href="https://www.elastix.ai/" target="_blank">Elastix AI</a>. I work on <strong>LLM inference performance</strong>: serving benchmarks, profiling, KV cache behavior, and the tooling that tells us whether a change made inference faster.
+    I'm Wenxuan Xu, an AI Performance Engineer at <a href="https://www.elastix.ai/" target="_blank">Elastix AI</a>. I work on LLM inference performance, mostly benchmarking and profiling.
   </p>
   <p>
-    I contribute to open-source inference projects, including <a href="https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu" target="_blank">SGLang</a> and <a href="https://github.com/vllm-project/guidellm/pulls?q=is%3Apr+author%3Awenxuan-elastix" target="_blank">GuideLLM</a> in the vLLM project, and I built <a href="https://github.com/Wen-xuan-Xu/Literinfer" target="_blank">LiteInfer</a>, a C++/CUDA LLM inference engine with paged KV cache, continuous batching, and weight-only quantization.
+    I've made some small contributions to <a href="https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu" target="_blank">SGLang</a> and <a href="https://github.com/vllm-project/guidellm/pulls?q=is%3Apr+author%3Awenxuan-elastix" target="_blank">GuideLLM</a> (vLLM project). I also wrote <a href="https://github.com/Wen-xuan-Xu/Literinfer" target="_blank">LiteInfer</a>, a toy inference engine, for practice.
   </p>
   <p>
-    I received my M.S. in Computer Science from <a href="https://home.dartmouth.edu/" target="_blank">Dartmouth College</a>. Before infra, I did research in HCI, VR/AR, and LLMs for health sensing with <a href="https://campbell.cs.dartmouth.edu/" target="_blank">Andrew Campbell</a>, <a href="https://scholar.google.com/citations?user=UJPH5ioAAAAJ&hl=en" target="_blank">Hai-Ning Liang</a>, <a href="https://vvise.iat.sfu.ca/people/wolfgang-stuerzlinger" target="_blank">Wolfgang Stuerzlinger</a>, and <a href="https://pi.cs.tsinghua.edu.cn/lab/people/YuntaoWang/en/" target="_blank">Yuntao Wang</a>, which led to work such as <strong>LENS</strong> (ACL 2026).
+    I received my M.S. in Computer Science from Dartmouth College in 2026 and my B.S. from the University of Liverpool / Xi'an Jiaotong-Liverpool University in 2024.
+  </p>
+  <p>
+    Fun fact: before infra, I did HCI, VR, and LLM-for-health research with <a href="https://campbell.cs.dartmouth.edu/" target="_blank">Andrew Campbell</a>, <a href="https://scholar.google.com/citations?user=UJPH5ioAAAAJ&hl=en" target="_blank">Hai-Ning Liang</a>, <a href="https://vvise.iat.sfu.ca/people/wolfgang-stuerzlinger" target="_blank">Wolfgang Stuerzlinger</a>, and <a href="https://pi.cs.tsinghua.edu.cn/lab/people/YuntaoWang/en/" target="_blank">Yuntao Wang</a>, and published at ACL, IEEE VR, and ISMAR.
   </p>
 short_bio_zh: >-
   <p>
-    我是许文轩，现在是 <a href="https://www.elastix.ai/" target="_blank">Elastix AI</a> 的 <strong>AI Performance Engineer</strong>，做 <strong>LLM inference performance</strong>：serving benchmark、profiling、KV cache 行为分析，以及判断一个改动是否真的让推理变快的工具链。
+    我是许文轩，在 <a href="https://www.elastix.ai/" target="_blank">Elastix AI</a> 做 AI Performance Engineer，主要做 LLM 推理性能的 benchmark 和 profiling。
   </p>
   <p>
-    我参与开源推理项目，包括 <a href="https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu" target="_blank">SGLang</a> 和 vLLM 项目下的 <a href="https://github.com/vllm-project/guidellm/pulls?q=is%3Apr+author%3Awenxuan-elastix" target="_blank">GuideLLM</a>，也自己写了 <a href="https://github.com/Wen-xuan-Xu/Literinfer" target="_blank">LiteInfer</a>：一个带 paged KV cache、continuous batching 和 weight-only 量化的 C++/CUDA LLM 推理引擎。
+    给 <a href="https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu" target="_blank">SGLang</a> 和 vLLM 项目下的 <a href="https://github.com/vllm-project/guidellm/pulls?q=is%3Apr+author%3Awenxuan-elastix" target="_blank">GuideLLM</a> 做过一些小贡献，也写了 <a href="https://github.com/Wen-xuan-Xu/Literinfer" target="_blank">LiteInfer</a> 这个 toy 推理引擎练手。
   </p>
   <p>
-    我在 <a href="https://home.dartmouth.edu/" target="_blank">Dartmouth College</a> 获得计算机科学硕士学位。转向 infra 之前，我和 <a href="https://campbell.cs.dartmouth.edu/" target="_blank">Andrew Campbell</a>、<a href="https://scholar.google.com/citations?user=UJPH5ioAAAAJ&hl=en" target="_blank">Hai-Ning Liang</a>、<a href="https://vvise.iat.sfu.ca/people/wolfgang-stuerzlinger" target="_blank">Wolfgang Stuerzlinger</a>、<a href="https://pi.cs.tsinghua.edu.cn/lab/people/YuntaoWang/en/" target="_blank">Yuntao Wang</a> 做过 HCI、VR/AR 和面向健康感知的 LLM 研究，产出了 <strong>LENS</strong>（ACL 2026）等工作。
+    2026 年在 Dartmouth College 获得计算机科学硕士学位，2024 年在利物浦大学 / 西交利物浦大学获得本科学位。
+  </p>
+  <p>
+    Fun fact：转 infra 之前，我和 <a href="https://campbell.cs.dartmouth.edu/" target="_blank">Andrew Campbell</a>、<a href="https://scholar.google.com/citations?user=UJPH5ioAAAAJ&hl=en" target="_blank">Hai-Ning Liang</a>、<a href="https://vvise.iat.sfu.ca/people/wolfgang-stuerzlinger" target="_blank">Wolfgang Stuerzlinger</a>、<a href="https://pi.cs.tsinghua.edu.cn/lab/people/YuntaoWang/en/" target="_blank">Yuntao Wang</a> 做过 HCI、VR 和 LLM 健康方向的研究，在 ACL、IEEE VR 和 ISMAR 发过论文。
   </p>
 
-portrait_url: /assets/images/photos/portrait.jpg
 education:
   - name: Dartmouth College
     logo: /assets/images/badges/dartmouth_shield.png
