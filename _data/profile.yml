@@ -7,12 +7,10 @@ tagline: >-
 #   - logo: /assets/images/badges/dartmouth_shield.png # Logo is optional
 #     name: MSDA Graduate Student
 
-email: "wenxuan.xu.gr@dartmouth.edu"
+email: "wenxuan@elastix.ai"
 cv_links:
-  - label: "CV EN"
+  - label: "CV (outdated)"
     url: "https://drive.google.com/file/d/1WydU5Ie44A2QtEbnIq0VKVeDI5OC-Ryh/view?usp=drive_link"
-  - label: "CV 中文"
-    url: "https://drive.google.com/file/d/1wwMCTDQ1gruBIOn8ZHnvWSFYy6nq83ho/view?usp=sharing"
 gscholar: -SkvrSAAAAAJ
 github: Wen-xuan-Xu
 github_work: wenxuan-elastix
@@ -26,7 +24,7 @@ linkedin: wenxuan-xu-012878220
 short_bio_text_justify: false
 short_bio: >-
   <p>
-    I'm Wenxuan Xu, an AI Performance Engineer at <a href="https://www.elastix.ai/" target="_blank">Elastix AI</a>. I work on LLM inference performance, mostly benchmarking and profiling.
+    I am Wenxuan Xu, an <strong>AI Performance Engineer</strong> at <a href="https://www.elastix.ai/" target="_blank">Elastix AI</a>. I work on <strong>LLM inference performance</strong>: serving benchmarks, profiling, KV cache behavior, and the tooling that tells us whether a change made inference faster.
   </p>
   <p>
     I've made some small contributions to <a href="https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu" target="_blank">SGLang</a> and <a href="https://github.com/vllm-project/guidellm/pulls?q=is%3Apr+author%3Awenxuan-elastix" target="_blank">GuideLLM</a> (vLLM project). I also wrote <a href="https://github.com/Wen-xuan-Xu/Literinfer" target="_blank">LiteInfer</a>, a toy inference engine, for practice.
@@ -39,7 +37,7 @@ short_bio: >-
   </p>
 short_bio_zh: >-
   <p>
-    我是许文轩，在 <a href="https://www.elastix.ai/" target="_blank">Elastix AI</a> 做 AI Performance Engineer，主要做 LLM 推理性能的 benchmark 和 profiling。
+    我是许文轩，现在是 <a href="https://www.elastix.ai/" target="_blank">Elastix AI</a> 的 <strong>AI Performance Engineer</strong>，做 <strong>LLM inference performance</strong>：serving benchmark、profiling、KV cache 行为分析，以及判断一个改动是否真的让推理变快的工具链。
   </p>
   <p>
     给 <a href="https://github.com/sgl-project/sglang/pulls?q=is%3Apr+author%3AWen-xuan-Xu" target="_blank">SGLang</a> 和 vLLM 项目下的 <a href="https://github.com/vllm-project/guidellm/pulls?q=is%3Apr+author%3Awenxuan-elastix" target="_blank">GuideLLM</a> 做过一些小贡献，也写了 <a href="https://github.com/Wen-xuan-Xu/Literinfer" target="_blank">LiteInfer</a> 这个 toy 推理引擎练手。
@@ -50,6 +48,8 @@ short_bio_zh: >-
   <p>
     Fun fact：转 infra 之前，我和 <a href="https://campbell.cs.dartmouth.edu/" target="_blank">Andrew Campbell</a>、<a href="https://scholar.google.com/citations?user=UJPH5ioAAAAJ&hl=en" target="_blank">Hai-Ning Liang</a>、<a href="https://vvise.iat.sfu.ca/people/wolfgang-stuerzlinger" target="_blank">Wolfgang Stuerzlinger</a>、<a href="https://pi.cs.tsinghua.edu.cn/lab/people/YuntaoWang/en/" target="_blank">Yuntao Wang</a> 做过 HCI、VR 和 LLM 健康方向的研究，在 ACL、IEEE VR 和 ISMAR 发过论文。
   </p>
+
+portrait_url: /assets/images/photos/portrait.jpg
 
 education:
   - name: Dartmouth College

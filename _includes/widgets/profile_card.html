@@ -20,6 +20,7 @@
             {% if site.data.profile.tagline %}
             <div class="tagline">{{ site.data.profile.tagline }}</div>
             {% endif %}
+            <div class="last-updated" id="last-updated-line">Last updated {{ site.time | date: "%B %-d, %Y" }}</div>
 
             {% if site.data.profile.positions %}
             <div class="positions mb-3">
