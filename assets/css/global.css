@@ -165,7 +165,7 @@ a.mascot, a.mascot:hover { border: 2px solid var(--accent); }
 /* footer */
 .footer { border-top: 1px solid var(--line); padding: 20px 0 40px; font-size: 14px; color: var(--muted); background: transparent; }
 .footer .container { padding: 0 20px; }
-.visitor-globe { width: 160px; height: 160px; margin: 48px auto 0; }
+.visitor-globe { width: 200px; height: 200px; margin: 48px auto 0; }
 
 @media (max-width: 640px) {
   .container { padding-top: 56px; }
