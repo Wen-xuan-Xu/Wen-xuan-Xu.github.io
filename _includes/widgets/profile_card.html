@@ -1,16 +1,13 @@
-<div class="row">
-    <div class="col-md-4">
-        <div class="profile-photo-container">
-            {% if site.data.profile.portrait_url %}
-            <img class="portrait img-fluid" src="{{ site.data.profile.portrait_url | relative_url }}" alt="portrait">
-            {% if site.data.profile.portrait_caption %}
-            <div class="portrait-caption">{{ site.data.profile.portrait_caption }}</div>
-            {% endif %}
-            {% endif %}
-        </div>
+<div class="profile">
+    <div class="profile-photo">
+        {% if site.data.profile.portrait_url %}
+        <img class="portrait" src="{{ site.data.profile.portrait_url | relative_url }}" alt="Portrait of {{ site.data.profile.primary_name }}">
+        {% if site.data.profile.portrait_caption %}
+        <div class="portrait-caption">{{ site.data.profile.portrait_caption }}</div>
+        {% endif %}
+        {% endif %}
     </div>
-    
-    <div class="col-md-8">
+
         <div class="profile-content">
             <div class="name-container">
                 <h1 class="name">
@@ -20,6 +17,9 @@
                     {% endif %}
                 </h1>
             </div>
+            {% if site.data.profile.tagline %}
+            <div class="tagline">{{ site.data.profile.tagline }}</div>
+            {% endif %}
 
             {% if site.data.profile.positions %}
             <div class="positions mb-3">
@@ -112,7 +112,6 @@
                 {% endif %}
             </div>
         </div>
-    </div>
 </div>
 
 <script>

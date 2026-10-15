@@ -1,0 +1,814 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hybrid KV Cache 图解</title>
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Noto+Serif+SC:wght@500;700&family=Noto+Sans+SC:wght@400;500;700&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* layout: editorial reading column (~70ch) with wide "lab" panels breaking out to 1180px; sticky chapter rail */
+:root{
+  --bg:#F3EFE6; --surface:#FBF9F4; --surface-2:#ECE6D9; --glass:rgba(243,239,230,.9);
+  --ink:#1F1D1A; --ink-2:#5A554B; --ink-3:#8C8577; --line:#D8D0BF;
+  --clay:#C8643F; --clay-ink:#A44E2C; --clay-soft:#F1DACC;
+  --sky:#5E8FB9; --sky-ink:#3B6A92; --sky-soft:#DAE6F0;
+  --sage:#7E8E58; --sage-ink:#55652F; --sage-soft:#E1E6CF;
+  --oat:#E2D8C3; --warn:#B4362B; --warn-soft:#F4D8D3;
+  --k-sys:var(--oat); --k-sys-s:var(--ink-3); --k-doc:var(--sky-soft); --k-doc-s:var(--sky);
+  --k-q:var(--sage-soft); --k-q-s:var(--sage); --k-a:var(--clay-soft); --k-a-s:var(--clay);
+  --serif:"Newsreader","Noto Serif SC","Songti SC",Georgia,serif;
+  --sans:"Hanken Grotesk","Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#1B1A17; --surface:#24221F; --surface-2:#2E2B27; --glass:rgba(27,26,23,.9);
+  --ink:#EEE9DF; --ink-2:#B6AFA2; --ink-3:#877F73; --line:#3B3833;
+  --clay:#E0835F; --clay-ink:#EC9A78; --clay-soft:#4A3026;
+  --sky:#7FAAD0; --sky-ink:#9DC0DE; --sky-soft:#223442;
+  --sage:#A4B47C; --sage-ink:#BBC994; --sage-soft:#2F3524;
+  --oat:#3A362F; --warn:#F07B6D; --warn-soft:#4A2522; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#1B1A17; --surface:#24221F; --surface-2:#2E2B27; --glass:rgba(27,26,23,.9);
+  --ink:#EEE9DF; --ink-2:#B6AFA2; --ink-3:#877F73; --line:#3B3833;
+  --clay:#E0835F; --clay-ink:#EC9A78; --clay-soft:#4A3026;
+  --sky:#7FAAD0; --sky-ink:#9DC0DE; --sky-soft:#223442;
+  --sage:#A4B47C; --sage-ink:#BBC994; --sage-soft:#2F3524;
+  --oat:#3A362F; --warn:#F07B6D; --warn-soft:#4A2522; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-padding-top:64px}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.75 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px}
+.col{max-width:720px}
+a{color:var(--clay-ink);text-underline-offset:3px;text-decoration-thickness:1px}
+p{margin:0 0 16px}
+code,.mono{font-family:var(--mono);font-size:.88em}
+p code,li code,td code{background:var(--surface-2);padding:1px 6px;border-radius:5px}
+h1,h2,h3{font-family:var(--serif);font-weight:500;margin:0;text-wrap:balance}
+h1{font-size:clamp(44px,7vw,88px);line-height:1.04;letter-spacing:-.015em}
+h2{font-size:clamp(30px,4vw,48px);line-height:1.12;letter-spacing:-.01em;margin-bottom:22px}
+h3{font-size:24px;line-height:1.3;margin-bottom:10px}
+.eyebrow{font:500 13px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--clay-ink)}
+.lead{font-size:20px;line-height:1.7;color:var(--ink-2);max-width:680px}
+.muted{color:var(--ink-2)}
+.small{font-size:14px;line-height:1.6}
+
+/* rail */
+nav.rail{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav.rail .wrap{display:flex;gap:6px;overflow-x:auto;padding-block:10px;scrollbar-width:none}
+nav.rail a{flex:none;font:500 13px/1 var(--sans);color:var(--ink-2);text-decoration:none;padding:8px 12px;border-radius:999px}
+nav.rail a:hover,nav.rail a:focus-visible{background:var(--surface-2);color:var(--ink);outline:none}
+nav.rail a.on{background:var(--ink);color:var(--bg)}
+
+/* hero */
+header.hero{padding-block:64px 24px}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:28px}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px 18px;font:400 13px/1.5 var(--mono);color:var(--ink-3)}
+.hero-figure{margin:8px 0 0}
+.hero-figure svg{width:100%;height:auto;display:block}
+.hero-count{font:400 14px/1.6 var(--mono);color:var(--ink-2);text-align:center;margin-top:4px;font-variant-numeric:tabular-nums}
+
+/* chapters */
+section.chapter{padding-block:80px 40px;border-top:1px solid var(--line)}
+.ch-head{display:flex;align-items:baseline;gap:18px;margin-bottom:8px}
+.ch-num{font:italic 400 64px/1 var(--serif);color:var(--clay)}
+
+/* lab */
+.lab{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px;margin-block:32px}
+.lab-head{display:flex;flex-wrap:wrap;gap:6px 20px;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+.lab-title{font:500 22px/1.3 var(--serif)}
+.lab-tag{font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.controls{display:flex;flex-wrap:wrap;gap:14px 26px;align-items:flex-end;margin-block:14px 18px}
+.ctrl{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ctrl.grow{flex:1 1 220px}
+.ctrl > span{font-size:13px;color:var(--ink-2)}
+.ctrl output{font-family:var(--mono);color:var(--ink);font-variant-numeric:tabular-nums}
+input[type=range]{accent-color:var(--clay);width:100%}
+.seg{display:inline-flex;flex-wrap:wrap;gap:2px;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surface-2)}
+.seg button{border:0;background:transparent;padding:7px 13px;border-radius:999px;font:500 13px/1.2 var(--sans);color:var(--ink-2);cursor:pointer}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.btn{border:1px solid var(--ink-3);background:transparent;color:var(--ink);border-radius:999px;padding:8px 16px;font:500 14px/1.2 var(--sans);cursor:pointer}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--clay-ink);border-color:var(--clay-ink);color:var(--bg)}
+.btn:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible{outline:2px solid var(--clay);outline-offset:2px}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.scroll svg{display:block;width:100%;min-width:720px;height:auto}
+.caption{font-size:15px;line-height:1.65;color:var(--ink-2);margin-top:12px;max-width:820px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--ink-2);margin-top:6px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.params{font:400 13px/1.6 var(--mono);color:var(--ink-2);background:var(--surface-2);border-radius:10px;padding:8px 12px;margin-bottom:10px}
+.verdict-line{font-size:16px;margin-top:10px}
+.bad{color:var(--warn)} .good{color:var(--sage-ink)}
+
+/* svg text */
+svg text{font-family:var(--sans)}
+svg .m{font-family:var(--mono)}
+svg .s{font-family:var(--serif)}
+
+/* tables */
+.tbl{overflow-x:auto;margin-block:16px 8px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px;line-height:1.55;font-variant-numeric:tabular-nums}
+th,td{text-align:left;vertical-align:top;padding:10px 14px;border-bottom:1px solid var(--line)}
+th{font-weight:600;color:var(--ink-2);background:var(--surface-2);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num{font-family:var(--mono);font-size:14px}
+
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-block:24px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;min-width:0}
+.card .k{font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--clay-ink);margin-bottom:10px}
+.card p{font-size:15px;line-height:1.65;margin:0 0 8px;color:var(--ink-2)}
+.card p.q{color:var(--ink);font-size:16px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-block:28px}
+.fact .v{font:500 40px/1.1 var(--serif);color:var(--ink)}
+.fact .v em{font-style:normal;color:var(--clay)}
+.fact .l{font-size:14px;color:var(--ink-2);margin-top:4px}
+.bars{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.bar-row{display:grid;grid-template-columns:200px minmax(0,1fr);gap:14px;align-items:center}
+.bar-row .name{font-size:14px;color:var(--ink-2)}
+.bar-track{position:relative;height:30px;background:var(--surface-2);border-radius:8px;overflow:hidden}
+.bar-fill{position:absolute;left:0;top:0;bottom:0;border-radius:8px;transition:width .35s ease}
+.bar-label{position:absolute;left:10px;top:50%;transform:translateY(-50%);font:500 13px/1 var(--mono);color:var(--ink);white-space:nowrap}
+@media (max-width:640px){ .bar-row{grid-template-columns:1fr;gap:4px} }
+.timeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-block:24px}
+.tl{border-top:3px solid var(--sky);padding-top:12px}
+.tl .d{font:500 13px/1 var(--mono);color:var(--sky-ink)}
+.tl .t{font:500 20px/1.3 var(--serif);margin:6px 0}
+.tl p{font-size:14px;line-height:1.6;color:var(--ink-2);margin:0}
+.callout{border:1.5px solid var(--clay);background:var(--surface);border-radius:20px;padding:28px;margin-block:32px}
+.callout .big{font:500 clamp(24px,3vw,34px)/1.35 var(--serif);margin-bottom:18px;text-wrap:balance}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
+.two h3{font-size:20px}
+ul.clean,ol.clean{padding-left:20px;margin:0 0 16px}
+ul.clean li,ol.clean li{margin:6px 0}
+ol.qs{list-style:none;padding:0;margin:20px 0;counter-reset:q}
+ol.qs li{counter-increment:q;display:grid;grid-template-columns:48px minmax(0,1fr);gap:8px;padding:14px 0;border-top:1px solid var(--line);font-size:18px}
+ol.qs li::before{content:counter(q);font:italic 500 30px/1 var(--serif);color:var(--clay)}
+.req-buttons{display:flex;flex-wrap:wrap;gap:8px}
+.req-buttons .btn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;border-radius:12px;padding:8px 12px;text-align:left}
+.req-buttons .btn b{font:600 14px/1.2 var(--mono)}
+.req-buttons .btn span{font-size:12px;color:var(--ink-2)}
+footer{padding-block:48px 80px;border-top:1px solid var(--line);color:var(--ink-3);font-size:14px}
+@keyframes ping{0%{r:8;opacity:.9}100%{r:22;opacity:0}}
+.ping{animation:ping 1.6s ease-out infinite}
+@media (prefers-reduced-motion:reduce){ .ping{animation:none;opacity:0} .bar-fill{transition:none} }
+</style>
+</head><body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="7" height="7" style="fill:var(--clay-soft)"/>
+      <line x1="0" y1="0" x2="0" y2="7" style="stroke:var(--clay);stroke-width:2.2"/>
+    </pattern>
+    <pattern id="hatch-ink" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="6" style="stroke:var(--ink-3);stroke-width:1.4"/>
+    </pattern>
+  </defs>
+</svg>
+
+<nav class="rail" aria-label="章节">
+  <div class="wrap" id="rail">
+    <a href="#top">开头</a>
+    <a href="#memory">01 两种记忆</a>
+    <a href="#pools">02 内存布局</a>
+    <a href="#vllm">03 vLLM 与 896</a>
+    <a href="#tree">04 Radix tree</a>
+    <a href="#together">05 放在一起看</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <p class="small" style="margin:0"><a href="/">← 返回主页</a></p>
+    <p class="eyebrow">Hybrid 模型的 prefix cache</p>
+    <h1>两种记忆，<br>一张缓存</h1>
+    <p class="lead">Qwen3-Next、Qwen3.5、Kimi Linear 这类 hybrid 模型同时有 attention 层和 recurrent 层（GDN、Mamba）。两种层记东西的方式完全不同，prefix cache 必须同时照顾两边。下面每一节都有一个可以动手的小实验，讲 vLLM、SGLang 和 Marconi 各自怎么做。</p>
+    <div class="hero-meta"><span>Wenxuan Xu</span><span>2026-09-30</span><span>vLLM 8fb16ea5a6</span><span>SGLang f050ab194a</span><span>Marconi · MLSys 2025</span></div>
+    <figure class="hero-figure">
+      <svg id="hero-svg" viewBox="0 0 1000 390" role="img" aria-label="token 流同时进入两层：attention 层每个 token 留下一块 KV，越来越长；recurrent 层把所有 token 压进一个大小不变的 state"></svg>
+      <p class="hero-count" id="hero-count"></p>
+    </figure>
+  </div>
+</header>
+
+<!-- 01 -->
+<section class="chapter" id="memory">
+  <div class="wrap">
+    <div class="ch-head"><span class="ch-num">01</span><p class="eyebrow">两种记忆</p></div>
+    <div class="col">
+      <h2>attention 可以截断，state 只能精确命中</h2>
+      <p>attention 层给每个 token 留一块 KV。想从第 p 个 token 接着算，把 KV 截到 p 就行。</p>
+      <p>recurrent 层只有一个固定大小的 state，每读一个 token 就原地覆盖一次。它回不到过去：想从 p 接着算，必须事先在 p 处存过一份 state 的拷贝，也就是 checkpoint。</p>
+      <p>拷贝很贵。以一个 GDN 模型的配置为例，一个 GDN state 是 3.12 MiB，相当于 799 个 token 的 KV。</p>
+    </div>
+
+    <div class="lab" id="mem-lab">
+      <div class="lab-head"><span class="lab-title">动手：往前读、存 checkpoint、再恢复</span><span class="lab-tag">实验 1</span></div>
+      <div class="controls">
+        <label class="ctrl grow"><span>已经读到第 <output id="m-n-o"></output> 个 token</span><input id="m-n" type="range" min="256" max="3584" step="128" value="2688"></label>
+        <label class="ctrl grow"><span>想从第 <output id="m-p-o"></output> 个 token 恢复</span><input id="m-p" type="range" min="0" max="2688" step="128" value="2304"></label>
+        <div class="ctrl" style="flex-direction:row;gap:8px"><button class="btn primary" id="m-save" type="button">在当前位置存 checkpoint</button><button class="btn" id="m-clear" type="button">清空</button></div>
+      </div>
+      <div class="scroll"><svg id="mem-svg" viewBox="0 0 1000 330" role="img" aria-label="attention KV 与 state checkpoint 的对比"></svg></div>
+      <p class="caption" id="mem-cap"></p>
+    </div>
+
+    <div class="facts">
+      <div class="fact"><div class="v">4 KiB</div><div class="l">一个 token 的 attention KV：4 heads × 256 dim × K、V × bf16</div></div>
+      <div class="fact"><div class="v"><em>3.12</em> MiB</div><div class="l">一个 GDN state，大小和读了多少 token 无关</div></div>
+      <div class="fact"><div class="v">799</div><div class="l">一个 state 等于这么多个 token 的 KV</div></div>
+      <div class="fact"><div class="v">0.4% <span class="muted" style="font-size:24px">vs</span> 25%</div><div class="l">Marconi 实测：state 和 KV block 后来真的被复用的比例</div></div>
+    </div>
+
+    <div class="col">
+      <p>所以 hybrid 模型的命中长度，等于 attention 和 recurrent 两边都能恢复的公共位置。剩下的问题只有三个。</p>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="k">Admission · 在哪存</div><p class="q">每 N 个 token 存一个，只在 chunk 边界存，还是只在分支点存？</p><p>存太密会占满显存。vLLM 观察到密集快照占掉 80% 的 pool。</p></div>
+      <div class="card"><div class="k">Matching · 怎么对齐</div><p class="q">attention 匹配到 2432，最近的 checkpoint 在 1792。</p><p>只能从 1792 恢复，多匹配的 640 个 token 要重算。</p></div>
+      <div class="card"><div class="k">Eviction · 淘汰谁</div><p class="q">KV 的大小正比于它省下的算力，state 不是。</p><p>代表 token 越多的 state 越值钱，LRU 会误删它们。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 -->
+<section class="chapter" id="pools">
+  <div class="wrap">
+    <div class="ch-head"><span class="ch-num">02</span><p class="eyebrow">内存布局</p></div>
+    <div class="col">
+      <h2>一个大池子，还是两个池子</h2>
+      <p><b>vLLM</b> 让所有层共用一个 block pool。为了让同一个 block 既能装 attention KV，也能装一个 state，它把 attention 的 block 撑大：3.12 MiB ÷ 4 KiB ≈ 799，向上对齐到 128 的倍数就是 896。启动日志里的 <code>Setting attention block size to 896 tokens</code> 就是这么来的。</p>
+      <p><b>SGLang</b> 分两个池：state 按请求分 slot，KV 按 token 分 page。attention 的粒度不受影响；代价是 state 池按比例静态切出去，每个 running request 还要预留 3 到 5 个 slot。</p>
+    </div>
+    <div class="lab">
+      <div class="lab-head"><span class="lab-title">两种布局</span><span class="lab-tag">示意图</span></div>
+      <div class="scroll"><svg id="pool-svg" viewBox="0 0 1000 330" role="img" aria-label="vLLM 一个统一 block pool 与 SGLang 两个独立池的对比"></svg></div>
+      <div class="legend"><span><i style="background:var(--sky-soft);border:1.5px solid var(--sky)"></i>attention KV</span><span><i style="background:var(--clay)"></i>GDN state</span><span><i style="background:transparent;border:1.5px dashed var(--ink-3)"></i>空闲</span><span><i style="background:var(--clay-soft);border:1.5px solid var(--clay)"></i>为对齐 pad 掉的 11%</span></div>
+    </div>
+
+    <div class="lab" id="short-lab">
+      <div class="lab-head"><span class="lab-title">动手：共享前缀有多长，才缓存得住</span><span class="lab-tag">实验 2</span></div>
+      <div class="controls">
+        <label class="ctrl grow"><span>多个请求共享的前缀长度：<output id="s-l-o"></output> token</span><input id="s-l" type="range" min="64" max="4096" step="16" value="480"></label>
+      </div>
+      <div class="bars" id="short-bars"></div>
+      <p class="caption" id="short-cap"></p>
+    </div>
+  </div>
+</section>
+
+<!-- 03 -->
+<section class="chapter" id="vllm">
+  <div class="wrap">
+    <div class="ch-head"><span class="ch-num">03</span><p class="eyebrow">vLLM · 匹配、写入、896</p></div>
+    <div class="col">
+      <h2>匹配取交集，写入看网格</h2>
+      <p>匹配时，每种层一个 manager，各找各的命中长度，然后取所有层都能恢复的最长位置。候选长度只缩不涨，直到不再变化。</p>
+    </div>
+    <div class="lab">
+      <div class="lab-head"><span class="lab-title">三个 manager 怎么找</span><span class="lab-tag">示意图</span></div>
+      <div class="scroll"><svg id="mgr-svg" viewBox="0 0 1000 300" role="img" aria-label="Full attention 从左往右找，sliding window 从右往左找连续窗口，Mamba 只要一块 state，最后取公共位置"></svg></div>
+    </div>
+    <div class="col">
+      <p>写入更受限。GDN 类模型只能用 align 模式：只有当一个 prefill chunk 恰好结束在 896 的倍数上，那里的 state 才会被冻结成能命中的 checkpoint。所以 scheduler 会主动把 chunk 切在 block 边界上。</p>
+      <p>问题出在它用哪个网格切。scheduler 读的是 <code>cache_config.block_size</code>，也就是所有 cache group 里最小的 block size。只要有一个更小 block 的 group，切分网格就和 GDN 网格对不上。例如 128 对 896 的配置就是这样。</p>
+    </div>
+
+    <div class="lab" id="grid-lab">
+      <div class="lab-head"><span class="lab-title">实验台：896 案例与 PR #54076</span><span class="lab-tag">实验 3</span></div>
+      <div class="controls" style="margin-bottom:6px">
+        <div class="ctrl"><span>预设</span><div class="seg" id="g-preset"></div></div>
+      </div>
+      <div class="controls">
+        <div class="ctrl"><span>更小的 group block</span><div class="seg" id="g-small"></div></div>
+        <div class="ctrl"><span>修复方式</span><div class="seg" id="g-fix"></div></div>
+        <div class="ctrl"><span>--prefix-match-unit</span><div class="seg" id="g-pmu"></div></div>
+        <div class="ctrl"><span>MTP</span><div class="seg" id="g-mtp"></div></div>
+        <label class="ctrl grow"><span>prompt 长度 n = <output id="g-n-o"></output></span><input id="g-n" type="range" min="1024" max="5120" step="32" value="2528"></label>
+        <label class="ctrl grow"><span>三个请求共享前 <output id="g-s-o"></output> 个 token</span><input id="g-s" type="range" min="0" max="2528" step="32" value="2496"></label>
+      </div>
+      <div class="params" id="g-params"></div>
+      <div class="scroll"><svg id="grid-svg" viewBox="0 0 1000 460" role="img" aria-label="三个请求的 chunk 切分、checkpoint 落点和命中位置"></svg></div>
+      <div class="legend">
+        <span><i style="background:var(--sage)"></i>命中，可复用</span>
+        <span><i style="background:var(--clay)"></i>合法 checkpoint</span>
+        <span><i style="background:var(--clay);border-radius:2px;transform:rotate(45deg) scale(.8)"></i>prompt 尾部的 partial 条目</span>
+        <span><i style="background:var(--surface);border:1.5px dashed var(--ink-3);border-radius:2px"></i>跨过了 block 边界，slot 为空</span>
+        <span><i style="background:var(--warn)"></i>错位：hash 和 state 对不上</span>
+        <span><i style="background:var(--sky);border-radius:1px;width:3px"></i>attention 匹配</span>
+        <span><i style="border-left:2px dashed var(--ink-2);border-radius:0;width:2px"></i>读侧上限</span>
+      </div>
+      <p class="verdict-line" id="g-verdict"></p>
+      <div class="tbl"><table id="g-table"></table></div>
+      <p class="caption">简化模型：三个请求依次到达，前 S 个 token 相同，之后各不相同。按 vLLM align 模式的切分规则推演，假设密集保留，prefill 预算 2048，attention block 896。用来解释机制，不是 benchmark。</p>
+    </div>
+
+    <div class="col">
+      <h3>试试这几个预设</h3>
+      <ul class="clean">
+        <li><b>不加 flag</b>：chunk 结束在 2048、2304、2528，没有一个是 896 的倍数，slot 全空，三个请求都命中 0。</li>
+        <li><b>只加 --block-size 896</b>：896 能存下来，但读侧上限只有 896，命中卡在 896。</li>
+        <li><b>两个都加</b>：REQ2 在共享前缀交点 1792 断开，写下 1792；REQ3 才命中 1792。cache 是一步步暖起来的。</li>
+        <li><b>PR #54076</b>：每跨过一个 block 边界都断开，REQ1 自己就写下 896 和 1792，REQ2 直接命中 1792。</li>
+        <li><b>长 prompt 的错位</b>：n = 4000 时，slot 2 冻结着 2048 处的 state，却被当成 2688 发布出去。REQ2 命中它，用的是过时的 state，输出会悄悄变错。</li>
+      </ul>
+    </div>
+
+    <h3 style="margin-top:40px">PR #54076 改了三处</h3>
+    <div class="cards">
+      <div class="card"><div class="k">① 切分网格</div><p class="q">用 Mamba group 自己的 block size，不再用所有 group 的最小值。</p><p>今天 main 的 <code>scheduler.py:443</code> 仍是 <code>cache_config.block_size</code>。</p></div>
+      <div class="card"><div class="k">② 边界强制断开</div><p class="q">每跨过一个 block 边界都结束 chunk，从对齐位置开始也一样。</p><p>原来一个 chunk 能跨 k 个 block，中间 k − 1 个 slot 一直为空。</p></div>
+      <div class="card"><div class="k">③ 回退范围</div><p class="q">最后一个 block 的回退只对 eagle、eagle3、mtp 生效。</p><p>DFlash 和 DSpark 用自己的 KV，不再回退。对 MTP 没有影响。</p></div>
+    </div>
+    <div class="tbl"><table>
+      <tr><th>情况</th><th>例子</th><th>不修会怎样</th><th>修后（社区部署数据）</th></tr>
+      <tr><td>网格一致</td><td>padding 之后 block size 相等的常规配置</td><td>没有问题</td><td>无变化，两组 A/B 零差异</td></tr>
+      <tr><td>有更细的 group</td><td>DFlash drafter 816 对 Mamba 1648；GLM-5.3 drafter 1152 对 2304；128 对 896</td><td>要么 state 从不落地，复用为 0；要么错位发布，命中过时的 state，输出悄悄变错</td><td>16.7K prompt 复用 0 → 100%，TTFT 8.18 s → 0.41 s；cold 与 warm 的 |Δlogprob| 0.25–0.36 → 0.02–0.04</td></tr>
+    </table></div>
+    <p class="caption">状态：9-30 仍是 open，没有 maintainer review，pre-run-check 失败。数据来自 PR 描述和评论区的部署报告，不是 CI 结果；一位评论者撤回了自己的数字。</p>
+
+
+    <h3 style="margin-top:40px">vLLM 正在一步步吸收 Marconi 的 admission 思路</h3>
+    <div class="timeline">
+      <div class="tl"><div class="d">2026-06</div><div class="t">#37898</div><p>attention 命中而 Mamba 没命中，就在共享前缀交点补存 state</p></div>
+      <div class="tl"><div class="d">2026-06</div><div class="t">#45845</div><p>Mamba group 支持稀疏保留，每 k 个 token 留一个</p></div>
+      <div class="tl"><div class="d">2026-07</div><div class="t">#47782</div><p>稀疏保留时仍然保住交点 checkpoint</p></div>
+      <div class="tl"><div class="d">2026-08</div><div class="t">#52216</div><p>稀疏保留成为默认，间隔 0 只留语义 checkpoint</p></div>
+      <div class="tl"><div class="d">2026-09</div><div class="t">#57382</div><p>交点 checkpoint 可以不在 block 网格上</p></div>
+    </div>
+    <p class="col muted">同期的默认值变化：所有 Mamba 模型默认 align（#50991）；all 模式 deprecated（#55041），GDN 从来没支持过 all；KDA 能在一次 prefill 内导出中间 state（#52789），GDN 还没有。淘汰仍是一条全局 LRU。</p>
+  </div>
+</section>
+
+<!-- 04 -->
+<section class="chapter" id="tree">
+  <div class="wrap">
+    <div class="ch-head"><span class="ch-num">04</span><p class="eyebrow">Marconi 与 SGLang · radix tree</p></div>
+    <div class="col">
+      <h2>树上的 state 挂在哪里</h2>
+      <p>SGLang 和 Marconi 都用 radix tree。边上存 KV，节点上可以挂一份 state。匹配时沿树往下走，只能停在挂着 state 的位置；attention 多匹配的部分要重算。</p>
+      <p>三种 admission 策略的区别，在于什么时候往树上挂 state：</p>
+      <ul class="clean">
+        <li><b>Marconi</b>：只在分支点和请求结束时存。分支点要等第二个请求来才发现，第三个起才命中。</li>
+        <li><b>SGLang no_buffer</b>：每个 chunk 边界、prompt 末尾、请求结束都存，位置精确，但要关掉 overlap。</li>
+        <li><b>SGLang extra_buffer</b>：chunk 边界按 64 对齐，再加上分支点；decode 每 256 个 token 存一次，所以请求结束时只缓存到最后一次存的位置。</li>
+      </ul>
+      <p>淘汰：LRU 只看最近用没用过。Marconi 的 FLOP-aware 还看这个 state 代表多少 token，越长越值钱。</p>
+    </div>
+
+    <div class="lab" id="tree-lab">
+      <div class="lab-head"><span class="lab-title">实验台：发请求，看树长出来</span><span class="lab-tag">实验 4</span></div>
+      <div class="controls">
+        <div class="ctrl"><span>Admission</span><div class="seg" id="t-policy"></div></div>
+        <div class="ctrl"><span>淘汰</span><div class="seg" id="t-evict"></div></div>
+        <label class="ctrl grow"><span>最多存 <output id="t-k-o"></output> 个 state</span><input id="t-k" type="range" min="3" max="14" step="1" value="6"></label>
+      </div>
+      <div class="controls" style="margin-top:0">
+        <div class="req-buttons" id="t-reqs"></div>
+        <div class="ctrl" style="flex-direction:row;gap:8px"><button class="btn primary" id="t-all" type="button">发送剩下的</button><button class="btn" id="t-reset" type="button">清空重来</button></div>
+      </div>
+      <div class="scroll"><svg id="tree-svg" viewBox="0 0 1000 330" role="img" aria-label="radix tree：每条横条是一段 token，圆点是挂在树上的 state"></svg></div>
+      <div class="legend">
+        <span><i style="background:var(--oat);border:1.5px solid var(--ink-3)"></i>系统提示</span>
+        <span><i style="background:var(--sky-soft);border:1.5px solid var(--sky)"></i>文档</span>
+        <span><i style="background:var(--sage-soft);border:1.5px solid var(--sage)"></i>问题</span>
+        <span><i style="background:var(--clay-soft);border:1.5px solid var(--clay)"></i>模型回答</span>
+        <span><i style="background:var(--clay)"></i>state checkpoint</span>
+        <span><i style="background:var(--surface);border:1.5px dashed var(--ink-3)"></i>已淘汰，只剩 KV（tombstone）</span>
+      </div>
+      <p class="verdict-line" id="t-verdict"></p>
+      <div class="tbl"><table id="t-table"></table></div>
+      <h3 style="font-size:19px;margin-top:22px">同一串请求，三种策略的总账</h3>
+      <div class="bars" id="t-bars"></div>
+      <p class="caption">教学模型：token 长度为示意，chunked prefill 每块 1024 token，只限制 state 数量，KV 视为足够。试试：选 Marconi，把上限调到 5，再在 LRU 和 FLOP-aware 之间切换。LRU 会丢掉文档 A 分支点上的 state，R5 只能从 1,024 恢复；FLOP-aware 保住它，R5 从 2,560 恢复。</p>
+    </div>
+
+    <div class="col">
+      <h3>SGLang 实现上的几个细节</h3>
+      <ul class="clean">
+        <li><b>延迟 CoW</b>：命中时只记下源 slot，forward 时在 mamba 层之前把 state 拷到请求自己的 slot。树里的 checkpoint 永远不被原地修改。</li>
+        <li><b>tombstone</b>：内部节点可以只丢 state、保留 KV。节点分裂时，新父节点也是 tombstone，因为 state 不能切分。</li>
+        <li><b>现状</b>：UnifiedRadixCache 对所有模型默认，树核心默认用 Rust；旧的 MambaRadixCache 已删除（#40313）。淘汰策略可选 lru、lfu、slru、priority、tlru，仍没有 FLOP-aware。</li>
+        <li><b>投机解码</b>：verify 不推进持久 state，每个 draft token 的 state 先写进 <code>intermediate_ssm</code>，verify 后把被接受的那一步拷回。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 05 -->
+<section class="chapter" id="together">
+  <div class="wrap">
+    <div class="ch-head"><span class="ch-num">05</span><p class="eyebrow">放在一起看</p></div>
+    <div class="col"><h2>同一个抽象，三种取舍</h2>
+      <p>三者都收敛到同一件事：attention 决定上界，recurrent state 决定能不能落地。差别在 checkpoint 的密度、位置策略，以及显存怎么分。</p></div>
+    <div class="tbl"><table>
+      <tr><th>维度</th><th>vLLM</th><th>SGLang</th><th>Marconi</th></tr>
+      <tr><td>state 放哪</td><td>和 KV 共用一个 pool，block 撑大到 896</td><td>独立的请求级 slot 池</td><td>radix tree 节点</td></tr>
+      <tr><td>checkpoint 密度</td><td>chunk 边界 ∩ block 网格，默认稀疏保留</td><td>chunk 边界、请求结束、每 256 token</td><td>每个序列最多 2 个</td></tr>
+      <tr><td>分支点</td><td>attention 命中而 Mamba 未命中时推断交点</td><td>branching seqlen（extra_buffer），SWA 也有</td><td>投机插入 radix tree</td></tr>
+      <tr><td>CoW</td><td>只在 partial tail 命中时</td><td>每次命中都拷一份</td><td>无</td></tr>
+      <tr><td>淘汰</td><td>一条全局 LRU</td><td>每组件 LRU 或 TLRU，内部节点 tombstone</td><td>recency + α · FLOPs/byte</td></tr>
+      <tr><td>显存预算</td><td>一个 pool，自动分配</td><td>按比例静态切分，或 unified memory</td><td>无</td></tr>
+    </table></div>
+
+    <div class="callout">
+      <div class="big">GDN 加 MTP 的 prefix caching，目前 SGLang 更稳。vLLM 更通用，但 align 模式对 block 几何很敏感。</div>
+      <div class="two">
+        <div><h3 style="color:var(--clay-ink)">SGLang 更好的地方</h3><ul class="clean"><li>attention 粒度不受影响，短前缀也能命中</li><li>checkpoint 位置不依赖 block 网格</li><li>内部节点可以只丢 state、保留 KV</li></ul></div>
+        <div><h3 style="color:var(--sky-ink)">vLLM 更好的地方</h3><ul class="clean"><li>一个 pool 自动分配，并发上限更高</li><li>full、SWA、Mamba 统一框架，connector 生态全</li><li>稀疏保留、交点 checkpoint、partial hit 都有</li></ul></div>
+      </div>
+      <p class="small muted" style="margin:8px 0 0">这是读代码和公开数据得出的判断，没有在同一个 workload 上做过对比实测。</p>
+    </div>
+
+    <div class="col">
+      <h3>参考资料</h3>
+      <ul class="clean small">
+        <li><a href="https://arxiv.org/abs/2411.19379">Marconi: Prefix Caching for the Era of Hybrid LLMs</a>（MLSys 2025）</li>
+        <li><a href="https://github.com/vllm-project/vllm/pull/54076">vllm-project/vllm#54076</a> · #37898 · #46384 · #47782 · #52216 · #57382</li>
+        <li><a href="https://pytorch.org/blog/hybrid-models-as-first-class-citizens-in-vllm/">Hybrid Models as First-Class Citizens in vLLM</a></li>
+        <li><a href="https://docs.vllm.ai/en/latest/features/automatic_prefix_caching/">vLLM Automatic Prefix Caching</a></li>
+        <li><a href="https://pytorch.org/blog/hybrid-models-meet-sglang-more-than-full-attention/">Hybrid Models Meet SGLang</a> · <a href="https://www.lmsys.org/blog/2026-08-11-unified-radix-cache/">Unified Radix Cache</a>（LMSYS，2026-08-11）</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap">作者：Wenxuan Xu · 2026-09-30<br>实验中的数字是教学模型推演，引用的公开数据均已标注来源</div></footer>
+
+<script>
+(function(){
+"use strict";
+const NS='http://www.w3.org/2000/svg';
+function S(tag,a,p){const e=document.createElementNS(NS,tag);if(a)for(const k in a){if(k==='text')e.textContent=a[k];else if(a[k]!==undefined&&a[k]!==null)e.setAttribute(k,a[k]);}if(p)p.appendChild(e);return e;}
+const $=id=>document.getElementById(id);
+const fmt=n=>Number(n).toLocaleString('en-US');
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function cubic(p0,p1,p2,p3,t){const u=1-t;return[u*u*u*p0[0]+3*u*u*t*p1[0]+3*u*t*t*p2[0]+t*t*t*p3[0],u*u*u*p0[1]+3*u*u*t*p1[1]+3*u*t*t*p2[1]+t*t*t*p3[1]];}
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+function blobPath(r,k){const N=12,pts=[];for(let i=0;i<N;i++){const th=i/N*Math.PI*2;const rr=r*(1+0.07*Math.sin(3*th+k)+0.05*Math.cos(5*th+2*k));pts.push([Math.cos(th)*rr,Math.sin(th)*rr]);}
+  let d='M'+pts[0][0].toFixed(1)+' '+pts[0][1].toFixed(1);
+  for(let i=0;i<N;i++){const p0=pts[(i-1+N)%N],p1=pts[i],p2=pts[(i+1)%N],p3=pts[(i+2)%N];
+    d+=' C'+(p1[0]+(p2[0]-p0[0])/6).toFixed(1)+' '+(p1[1]+(p2[1]-p0[1])/6).toFixed(1)+' '+(p2[0]-(p3[0]-p1[0])/6).toFixed(1)+' '+(p2[1]-(p3[1]-p1[1])/6).toFixed(1)+' '+p2[0].toFixed(1)+' '+p2[1].toFixed(1);}
+  return d+'Z';}
+function makeSeg(id,opts,get,set){const c=$(id);c.innerHTML='';opts.forEach(([v,lab])=>{const b=document.createElement('button');b.type='button';b.dataset.v=String(v);b.textContent=lab;b.addEventListener('click',()=>set(v));c.appendChild(b);});
+  c._sync=()=>{[...c.children].forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===String(get()))));};c._sync();return c;}
+
+/* ---------------- hero ---------------- */
+(function hero(){
+  const svg=$('hero-svg');const TILE0=420,TW=22,NT=24,SP=520,TRAVEL=900,SPLIT=700,PAUSE=2200;
+  const CYCLE=NT*SP+TRAVEL+SPLIT+PAUSE;
+  const g=S('g',{},svg);
+  // source
+  const src=S('g',{transform:'translate(64 190)',filter:'url(#rough)'},g);
+  [[-16,-20],[-4,-8],[8,4]].forEach(([x,y],i)=>S('rect',{x:x-12,y:y-4,width:30,height:22,rx:5,style:'fill:var(--surface);stroke:var(--ink);stroke-width:1.6;opacity:'+(0.55+i*0.2)},src));
+  S('text',{x:64,y:246,'text-anchor':'middle',text:'token 流',style:'font-size:15px;fill:var(--ink-2)'},g);
+  S('path',{d:'M96 190 C 200 190, 250 190, 330 190',style:'fill:none;stroke:var(--ink-3);stroke-width:1.6;stroke-dasharray:3 7'},g);
+  S('path',{d:'M330 190 C 372 190, 376 92, '+TILE0+' 92',style:'fill:none;stroke:var(--sky);stroke-width:1.8;opacity:.55'},g);
+  S('path',{d:'M330 190 C 380 190, 420 262, 720 262',style:'fill:none;stroke:var(--clay);stroke-width:1.8;opacity:.55'},g);
+  S('text',{x:TILE0,y:46,text:'Attention 层',class:'s',style:'font-size:24px;fill:var(--ink)'},g);
+  S('text',{x:TILE0+136,y:46,text:'每个 token 留一块 KV，越读越长',style:'font-size:15px;fill:var(--ink-2)'},g);
+  const tilesG=S('g',{filter:'url(#rough)'},g);const tiles=[];
+  for(let k=0;k<NT;k++){tiles.push(S('rect',{x:TILE0+k*TW,y:76,width:TW-4,height:32,rx:4,style:'fill:var(--sky-soft);stroke:var(--sky);stroke-width:1.6;opacity:0'},tilesG));}
+  const ann=S('g',{style:'opacity:0'},g);
+  const ax=TILE0+6*TW+(TW-4)/2;
+  S('path',{d:'M'+ax+' 118 L'+ax+' 134',style:'stroke:var(--clay);stroke-width:1.6'},ann);
+  S('text',{x:ax-8,y:154,text:'到这里，KV 已经和一个 state 一样大（约 799 token）',style:'font-size:14px;fill:var(--clay-ink)'},ann);
+  S('text',{x:TILE0,y:376,text:'Recurrent 层',class:'s',style:'font-size:24px;fill:var(--ink)'},g);
+  S('text',{x:TILE0+150,y:376,text:'所有 token 压进同一个 state，大小不变',style:'font-size:15px;fill:var(--ink-2)'},g);
+  const blobG=S('g',{transform:'translate(800 262)'},g);
+  const halo=S('path',{d:blobPath(86,1),style:'fill:var(--clay-soft);opacity:.7'},blobG);
+  const blob=S('path',{d:blobPath(64,0),style:'fill:var(--clay)',filter:'url(#rough)'},blobG);
+  S('text',{x:0,y:8,'text-anchor':'middle',text:'state',class:'s',style:'font-size:28px;font-style:italic;fill:var(--surface)'},blobG);
+  const toks=[];for(let k=0;k<NT;k++){toks.push([S('circle',{r:6,style:'fill:var(--ink);opacity:0'},g),S('circle',{r:6,style:'fill:var(--sky);opacity:0'},g),S('circle',{r:6,style:'fill:var(--clay);opacity:0'},g)]);}
+  const cnt=$('hero-count');let lastLanded=-1;
+  function frame(now){
+    const ct=reduce?(16*SP+TRAVEL+SPLIT+10):(now%CYCLE);
+    const fadeAll=ct>CYCLE-700?Math.max(0,(CYCLE-ct)/700):1;
+    let landed=0,lastLand=-1e9;
+    for(let k=0;k<NT;k++){const s=k*SP,t=ct-s,[a,b,c]=toks[k];const tx=TILE0+k*TW+(TW-4)/2;
+      if(t<0||t>TRAVEL+SPLIT){a.style.opacity=0;b.style.opacity=0;c.style.opacity=0;}
+      else if(t<=TRAVEL){const u=ease(t/TRAVEL);a.setAttribute('cx',96+(330-96)*u);a.setAttribute('cy',190);a.style.opacity=1;b.style.opacity=0;c.style.opacity=0;}
+      else{const v=ease((t-TRAVEL)/SPLIT);a.style.opacity=0;
+        const pb=cubic([330,190],[372,190],[376,92],[tx,92],v);b.setAttribute('cx',pb[0]);b.setAttribute('cy',pb[1]);b.style.opacity=1;
+        const pc=cubic([330,190],[380,190],[420,262],[800,262],v);c.setAttribute('cx',pc[0]);c.setAttribute('cy',pc[1]);c.setAttribute('r',6-4*v);c.style.opacity=1-v*0.8;}
+      const on=t>=TRAVEL+SPLIT;tiles[k].style.opacity=on?fadeAll:0;if(on){landed++;lastLand=s+TRAVEL+SPLIT;}}
+    const since=ct-lastLand;const pulse=1+0.07*Math.exp(-Math.max(0,since)/180);
+    blob.setAttribute('d',blobPath(64*pulse,reduce?0:now*0.0007));halo.setAttribute('d',blobPath(86,reduce?1:1+now*0.0004));
+    ann.style.opacity=landed>=7?fadeAll:0;
+    if(landed!==lastLanded){lastLanded=landed;const tok=landed*128;
+      cnt.textContent='已读 '+fmt(tok)+' 个 token  ·  attention KV '+(tok*4096/1048576).toFixed(1)+' MiB，还在长  ·  state 恒定 3.12 MiB';}
+    if(!reduce)requestAnimationFrame(frame);}
+  requestAnimationFrame(frame);
+})();
+
+/* ---------------- lab 1: memory ---------------- */
+(function memLab(){
+  const nI=$('m-n'),pI=$('m-p'),svg=$('mem-svg'),cap=$('mem-cap');let cks=[896];
+  const MAX=3584,X=t=>150+t/MAX*820;
+  function render(){
+    const n=+nI.value;pI.max=n;if(+pI.value>n)pI.value=n;const p=+pI.value;
+    $('m-n-o').textContent=fmt(n);$('m-p-o').textContent=fmt(p);
+    cks=cks.filter(c=>c<=n);
+    svg.innerHTML='';
+    const lab=(y,t,sub)=>{S('text',{x:0,y:y,text:t,class:'s',style:'font-size:20px;fill:var(--ink)'},svg);if(sub)S('text',{x:0,y:y+20,text:sub,style:'font-size:13px;fill:var(--ink-2)'},svg);};
+    lab(64,'Attention KV','每块 128 token');lab(174,'GDN state','从 checkpoint 出发');lab(276,'占用显存');
+    // p marker
+    S('line',{x1:X(p),x2:X(p),y1:30,y2:214,style:'stroke:var(--ink);stroke-width:1.4;stroke-dasharray:4 4'},svg);
+    S('text',{x:X(p),y:22,'text-anchor':'middle',text:'从 '+fmt(p)+' 恢复',style:'font-size:13px;fill:var(--ink);font-weight:600'},svg);
+    // tiles
+    const tg=S('g',{filter:'url(#rough)'},svg);const w=X(128)-X(0);
+    for(let i=0;i<n/128;i++){const ok=(i+1)*128<=p;S('rect',{x:X(i*128)+1.5,y:44,width:w-3,height:34,rx:4,style:ok?'fill:var(--sage-soft);stroke:var(--sage);stroke-width:1.6':'fill:var(--sky-soft);stroke:var(--sky);stroke-width:1.4'},tg);}
+    S('text',{x:X(0),y:100,text:'截断到 '+fmt(p)+' 即可，复用 '+fmt(p)+' 个 token',style:'font-size:13px;fill:var(--sage-ink)'},svg);
+    // state row
+    const c=cks.filter(x=>x<=p).reduce((a,b)=>Math.max(a,b),0);
+    S('line',{x1:X(0),x2:X(n),y1:170,y2:170,style:'stroke:var(--line);stroke-width:4;stroke-linecap:round'},svg);
+    if(c>0)S('rect',{x:X(0),y:162,width:X(c)-X(0),height:16,rx:8,style:'fill:var(--sage)'},svg);
+    if(p>c)S('rect',{x:X(c),y:162,width:X(p)-X(c),height:16,rx:3,style:'fill:url(#hatch)'},svg);
+    const lbl=c>0?'复用 '+fmt(c):'没有可用的 checkpoint';
+    S('text',{x:X(0),y:204,text:lbl,style:'font-size:13px;fill:var(--sage-ink)'},svg);
+    if(p>c)S('text',{x:(X(c)+X(p))/2,y:154,'text-anchor':'middle',text:'重算 '+fmt(p-c),style:'font-size:13px;fill:var(--clay-ink);font-weight:600'},svg);
+    const cg=S('g',{filter:'url(#rough)'},svg);
+    cks.forEach(x=>{S('circle',{cx:X(x),cy:170,r:9,style:'fill:var(--clay);stroke:var(--surface);stroke-width:2'},cg);S('text',{x:X(x),y:224,'text-anchor':'middle',text:fmt(x),class:'m',style:'font-size:11px;fill:var(--ink-2)'},svg);});
+    S('path',{d:blobPath(15,n/300),transform:'translate('+X(n)+' 170)',style:'fill:var(--clay);stroke:var(--ink);stroke-width:1.2'},svg);
+    S('text',{x:X(n),y:142,'text-anchor':'end',text:'当前 state',style:'font-size:12px;fill:var(--ink-2)'},svg);
+    // memory
+    const kv=n*4096/1048576,st=(cks.length+1)*3.12,M=Math.max(32,kv,st),W=t=>t/M*820;
+    S('rect',{x:150,y:252,width:W(kv),height:16,rx:4,style:'fill:var(--sky)'},svg);
+    S('text',{x:150+W(kv)+8,y:265,text:'KV '+kv.toFixed(1)+' MiB',class:'m',style:'font-size:12px;fill:var(--ink)'},svg);
+    S('rect',{x:150,y:278,width:W(st),height:16,rx:4,style:'fill:var(--clay)'},svg);
+    S('text',{x:150+W(st)+8,y:291,text:'state '+st.toFixed(2)+' MiB（'+cks.length+' 个 checkpoint + 当前 1 个）',class:'m',style:'font-size:12px;fill:var(--ink)'},svg);
+    cap.textContent=(c===p?'state 刚好在 '+fmt(p)+' 有 checkpoint，两边都能直接恢复。':'attention 直接截到 '+fmt(p)+'；state 只能从 '+(c?fmt(c):'0')+' 出发，要重算 '+fmt(p-c)+' 个 token。')+' 每多存一个 checkpoint 多占 3.12 MiB。存在哪里、存多少，就是 admission 要回答的问题。';
+  }
+  nI.addEventListener('input',render);pI.addEventListener('input',render);
+  $('m-save').addEventListener('click',()=>{const n=+nI.value;if(!cks.includes(n))cks.push(n);cks.sort((a,b)=>a-b);render();});
+  $('m-clear').addEventListener('click',()=>{cks=[];render();});
+  render();
+})();
+
+/* ---------------- pools illustration ---------------- */
+(function pools(){
+  const svg=$('pool-svg');
+  S('text',{x:0,y:30,text:'vLLM：一个 block pool',class:'s',style:'font-size:22px;fill:var(--ink)'},svg);
+  S('text',{x:0,y:52,text:'每个 block 都是 896 token 的 attention KV 那么大，也能装一个 pad 过的 state',style:'font-size:13px;fill:var(--ink-2)'},svg);
+  const types='aasaafsaaasfasafaasaffas';const cw=70,ch=50,g=S('g',{filter:'url(#rough)'},svg);
+  for(let i=0;i<24;i++){const x=(i%6)*(cw+8),y=72+Math.floor(i/6)*(ch+8),t=types[i];
+    if(t==='a')S('rect',{x,y,width:cw,height:ch,rx:6,style:'fill:var(--sky-soft);stroke:var(--sky);stroke-width:1.5'},g);
+    else if(t==='s'){S('rect',{x,y,width:cw,height:ch,rx:6,style:'fill:var(--clay-soft);stroke:var(--clay);stroke-width:1.5'},g);S('rect',{x:x,y:y,width:cw*0.89,height:ch,rx:6,style:'fill:var(--clay)'},g);}
+    else S('rect',{x,y,width:cw,height:ch,rx:6,style:'fill:none;stroke:var(--ink-3);stroke-width:1.4;stroke-dasharray:4 4'},g);}
+  S('text',{x:0,y:316,text:'好处：KV 和 state 之间自动分配。代价：block 粒度变成 896。',style:'font-size:13px;fill:var(--ink-2)'},svg);
+  const ox=540;
+  S('text',{x:ox,y:30,text:'SGLang：两个池',class:'s',style:'font-size:22px;fill:var(--ink)'},svg);
+  S('text',{x:ox,y:52,text:'KV 按 token 分 page，state 按请求分 slot',style:'font-size:13px;fill:var(--ink-2)'},svg);
+  const g2=S('g',{filter:'url(#rough)'},svg);
+  for(let r=0;r<11;r++)for(let c=0;c<12;c++){const used=(r*12+c)%7!==3&&r<9;S('rect',{x:ox+c*20,y:72+r*20,width:16,height:16,rx:3,style:used?'fill:var(--sky-soft);stroke:var(--sky);stroke-width:1':'fill:none;stroke:var(--ink-3);stroke-width:1;stroke-dasharray:2 3'},g2);}
+  S('text',{x:ox,y:310,text:'KV pool · page 1 或 64 · 只有 full-attention 层',style:'font-size:13px;fill:var(--ink-2)'},svg);
+  const mx=ox+262;S('line',{x1:mx-12,x2:mx-12,y1:66,y2:292,style:'stroke:var(--ink);stroke-width:1.4;stroke-dasharray:5 5'},svg);
+  for(let i=0;i<8;i++){const x=mx+(i%2)*92,y=72+Math.floor(i/2)*56;S('rect',{x,y,width:84,height:48,rx:8,style:i<6?'fill:var(--clay)':'fill:none;stroke:var(--clay);stroke-width:1.5;stroke-dasharray:4 4'},g2);}
+  S('text',{x:mx,y:310,text:'MambaPool · 每个请求 3 到 5 个 slot',style:'font-size:13px;fill:var(--ink-2)'},svg);
+  S('text',{x:mx-12,y:326,'text-anchor':'middle',text:'--mamba-full-memory-ratio 0.9：约 47% 给 state',class:'m',style:'font-size:11px;fill:var(--clay-ink)'},svg);
+})();
+
+/* ---------------- lab 2: short prefix ---------------- */
+(function shortLab(){
+  const I=$('s-l'),box=$('short-bars'),cap=$('short-cap');
+  const rows=[{k:'v',name:'vLLM align · block 896',col:'var(--sky)'},{k:'s',name:'SGLang extra_buffer · 64 对齐',col:'var(--clay)'}];
+  box.innerHTML=rows.map(r=>'<div class="bar-row"><div class="name">'+r.name+'</div><div class="bar-track"><div class="bar-fill" id="sb-'+r.k+'" style="background:'+r.col+';opacity:.85"></div><div class="bar-label" id="sl-'+r.k+'"></div></div></div>').join('');
+  function render(){const L=+I.value;$('s-l-o').textContent=fmt(L);
+    const v=Math.floor(L/896)*896,s=Math.floor(L/64)*64;
+    $('sb-v').style.width=(v/L*100)+'%';$('sb-s').style.width=(s/L*100)+'%';
+    $('sl-v').textContent='能复用 '+fmt(v)+' / '+fmt(L)+'（'+Math.round(v/L*100)+'%）';$('sl-s').textContent='能复用 '+fmt(s)+' / '+fmt(L)+'（'+Math.round(s/L*100)+'%）';
+    cap.textContent=(v===0?'共享前缀不到 896，vLLM 一个 checkpoint 都落不下，完全命不中。issue #40696 里，block 528 时 479-token 的 prompt 命中率就是 0%。':'vLLM 的 checkpoint 只能落在 896 的倍数上，尾巴上的 '+fmt(L-v)+' 个 token 每次都要重算。')+' 两边都假设第二个请求发现共享前缀、第三个起命中；vLLM 打开 --prefix-match-unit 后读侧能更细，见下一章。';}
+  I.addEventListener('input',render);render();
+})();
+
+/* ---------------- managers diagram ---------------- */
+(function mgr(){
+  const svg=$('mgr-svg'),X0=230,BW=52,GAP=6,X=i=>X0+i*(BW+GAP);
+  const rows=[{y:40,t:'Full attention',sub:'从左往右，第一个 miss 就停'},{y:130,t:'Sliding window',sub:'从右往左，找连续一个窗口'},{y:220,t:'Mamba / GDN',sub:'从右往左，只要一块 state'}];
+  rows.forEach(r=>{S('text',{x:0,y:r.y+22,text:r.t,class:'s',style:'font-size:20px;fill:var(--ink)'},svg);S('text',{x:0,y:r.y+42,text:r.sub,style:'font-size:13px;fill:var(--ink-2)'},svg);});
+  const g=S('g',{filter:'url(#rough)'},svg);
+  for(let i=0;i<12;i++){
+    S('rect',{x:X(i),y:40,width:BW,height:34,rx:5,style:i<10?'fill:var(--sky-soft);stroke:var(--sky);stroke-width:1.4':'fill:none;stroke:var(--ink-3);stroke-dasharray:4 4;stroke-width:1.3'},g);
+    S('rect',{x:X(i),y:130,width:BW,height:34,rx:5,style:(i>=5&&i<8)?'fill:var(--sky-soft);stroke:var(--sky);stroke-width:1.4':'fill:url(#hatch-ink);stroke:var(--ink-3);stroke-width:1'},g);
+    S('rect',{x:X(i),y:220,width:BW,height:34,rx:5,style:i===7?'fill:var(--clay);stroke:var(--clay);stroke-width:1.4':'fill:url(#hatch-ink);stroke:var(--ink-3);stroke-width:1'},g);}
+  const arrow=(x1,x2,y,col)=>{S('path',{d:'M'+x1+' '+y+' L'+x2+' '+y,style:'stroke:'+col+';stroke-width:2;fill:none'},svg);const dir=x2>x1?1:-1;S('path',{d:'M'+x2+' '+y+' l'+(-8*dir)+' -5 l0 10 z',style:'fill:'+col},svg);};
+  arrow(X(0),X(10)+4,90,'var(--sky-ink)');S('text',{x:X(10)+BW/2,y:30,'text-anchor':'middle',text:'miss',style:'font-size:12px;fill:var(--ink-2)'},svg);
+  arrow(X(12)-6,X(5),180,'var(--sky-ink)');S('text',{x:X(6)+BW/2,y:124,'text-anchor':'middle',text:'窗口内连续 3 块',style:'font-size:12px;fill:var(--sky-ink)'},svg);
+  arrow(X(12)-6,X(7)+BW,270,'var(--clay-ink)');S('text',{x:X(3),y:290,'text-anchor':'middle',text:'前面都是 null block',style:'font-size:12px;fill:var(--ink-2)'},svg);
+  const cx=X(8)-GAP/2;S('line',{x1:cx,x2:cx,y1:20,y2:262,style:'stroke:var(--ink);stroke-width:1.6;stroke-dasharray:5 4'},svg);
+  S('text',{x:cx+8,y:16,text:'公共命中：三者都能恢复的位置',style:'font-size:13px;fill:var(--ink);font-weight:600'},svg);
+})();
+
+/* ---------------- lab 3: grid simulator ---------------- */
+(function gridLab(){
+  const BM=896,BA=896;
+  const st={small:128,fix:'none',pmu:false,mtp:true,n:2528,S:2496,preset:'bug'};
+  const PRE={bug:['不加 flag',{small:128,fix:'none',pmu:false,mtp:true,n:2528,S:2496}],
+    pmu:['只加 --prefix-match-unit 128',{small:128,fix:'none',pmu:true,mtp:true,n:2528,S:2496}],
+    bs:['只加 --block-size 896',{small:128,fix:'blocksize',pmu:false,mtp:true,n:2528,S:2496}],
+    both:['两个都加',{small:128,fix:'blocksize',pmu:true,mtp:true,n:2528,S:2496}],
+    pr:['PR #54076',{small:128,fix:'pr',pmu:false,mtp:true,n:2528,S:2496}],
+    poison:['长 prompt 的错位',{small:128,fix:'none',pmu:false,mtp:true,n:4000,S:3904}]};
+  const gcd=(a,b)=>{while(b){[a,b]=[b,a%b];}return a;};
+  function sim(c){
+    const Bs=c.fix==='none'?c.small:BM, smallEff=c.fix==='blocksize'?BM:c.small;
+    const U=c.pmu?128:gcd(smallEff,BM), fine=U<BM, bstop=c.fix==='pr', n=c.n, Sh=Math.min(c.S,n), BUD=2048;
+    const tail=fine?Math.floor(n/U)*U:0, tailStop=(U<Bs)?tail:0;
+    const glob=new Map(), out=[];
+    for(let r=0;r<3;r++){
+      let Latt=0,ceil=0,hit=0,hitE=null;
+      if(r>0){const lim=Math.min(Sh,n-1);Latt=Math.floor(lim/BA)*BA;if(fine&&tail<=lim&&tail>Latt)Latt=tail;
+        const drop=c.mtp?(fine?U:BA):0;ceil=Math.max(0,Latt-drop);
+        glob.forEach((e,pos)=>{if(pos<=ceil&&pos>hit){hit=pos;hitE=e;}});}
+      const junction=(r>0&&ceil>hit)?Math.floor(ceil/Bs)*Bs:0;
+      let lcp=n-n%Bs;if(c.mtp)lcp=Math.max(lcp-Bs,0);
+      const slots={},done=new Set(),chunks=[],newE=[],nulls=[];
+      if(hit>0){slots[Math.floor((hit-1)/BM)]=hit;for(let i=0;(i+1)*BM<=hit;i++)done.add(i);}
+      let start=hit,guard=0;
+      while(start<n&&guard++<400){
+        let end=Math.min(start+BUD,n);
+        if(end<n){const ae=Math.floor(end/Bs)*Bs;if(ae>start)end=ae;}
+        const nbb=(bstop||start%Bs!==0)?(Math.floor(start/Bs)+1)*Bs:0;
+        const stops=[nbb,lcp,tailStop,junction].filter(v=>v>start&&v<end);
+        if(stops.length)end=Math.min(...stops);
+        const cur=Math.floor((end-1)/BM);
+        for(let i=0;(i+1)*BM<=end;i++){if(done.has(i))continue;done.add(i);const pos=(i+1)*BM;
+          const sv=i===cur?end:(i in slots?slots[i]:null);
+          if(sv===null){nulls.push(pos);continue;}
+          if(pos<=Sh&&glob.has(pos))continue;
+          const e={pos,state:sv,kind:'reg',bad:sv!==pos,r};newE.push(e);if(pos<=Sh)glob.set(pos,e);}
+        if(fine&&end===tail&&tail%BM!==0){const e={pos:tail,state:end,kind:'alias',bad:false,r};
+          if(!(tail<=Sh&&glob.has(tail))){newE.push(e);if(tail<=Sh)glob.set(tail,e);}}
+        slots[cur]=end;chunks.push([start,end]);start=end;}
+      out.push({r,Latt,ceil,hit,hitE,junction,chunks,newE,nulls});}
+    return {Bs,U,fine,bstop,out};}
+
+  const presetSeg=makeSeg('g-preset',Object.keys(PRE).map(k=>[k,PRE[k][0]]),()=>st.preset,v=>{Object.assign(st,PRE[v][1]);st.preset=v;render();});
+  const touch=()=>{st.preset='';};
+  const segs=[presetSeg,
+    makeSeg('g-small',[[896,'无（都是 896）'],[128,'128'],[640,'640']],()=>st.small,v=>{st.small=v;touch();render();}),
+    makeSeg('g-fix',[['none','原样'],['blocksize','--block-size 896'],['pr','PR #54076']],()=>st.fix,v=>{st.fix=v;touch();render();}),
+    makeSeg('g-pmu',[[false,'默认'],[true,'128']],()=>st.pmu,v=>{st.pmu=v;touch();render();}),
+    makeSeg('g-mtp',[[true,'开'],[false,'关']],()=>st.mtp,v=>{st.mtp=v;touch();render();})];
+  const nI=$('g-n'),sI=$('g-s');
+  nI.addEventListener('input',()=>{st.n=+nI.value;touch();render();});
+  sI.addEventListener('input',()=>{st.S=+sI.value;touch();render();});
+
+  function render(){
+    segs.forEach(s=>s._sync());
+    nI.value=st.n;sI.max=st.n;if(st.S>st.n)st.S=st.n;sI.value=st.S;
+    $('g-n-o').textContent=fmt(st.n);$('g-s-o').textContent=fmt(st.S);
+    const R=sim(st);
+    $('g-params').textContent='切分网格 '+R.Bs+' · GDN 网格 896 · hash 单位 '+R.U+' · 细粒度命中 '+(R.fine?'开':'关')+' · 边界强制断开 '+(R.bstop?'开':'关')+' · MTP 读侧回退 '+(st.mtp?(R.fine?R.U:896):0);
+    const svg=$('grid-svg');svg.innerHTML='';
+    const maxT=Math.ceil(st.n/BM)*BM,X=t=>110+t/maxT*860,ROW=136,TOP=58;
+    const H=TOP+3*ROW+10;svg.setAttribute('viewBox','0 0 1000 '+H);
+    for(let k=1;k*BM<=maxT;k++){const x=X(k*BM);S('line',{x1:x,x2:x,y1:36,y2:H-6,style:'stroke:var(--clay);stroke-width:1;stroke-dasharray:2 5;opacity:.6'},svg);
+      S('text',{x,y:28,'text-anchor':'middle',text:fmt(k*BM),class:'m',style:'font-size:12px;fill:var(--clay-ink)'},svg);}
+    S('text',{x:0,y:28,text:'GDN 网格',style:'font-size:13px;fill:var(--clay-ink);font-weight:600'},svg);
+    let anyBad=false;const hits=[];
+    R.out.forEach((o,r)=>{
+      const y0=TOP+r*ROW,ty=y0+28;
+      S('text',{x:0,y:ty+15,text:'REQ'+(r+1),class:'s',style:'font-size:22px;fill:var(--ink)'},svg);
+      const badHit=o.hitE&&o.hitE.bad;if(badHit)anyBad=true;hits.push(o.hit);
+      S('text',{x:0,y:ty+38,text:o.hit?('命中 '+fmt(o.hit)):'命中 0',style:'font-size:13px;font-weight:600;fill:'+(badHit?'var(--warn)':(o.hit?'var(--sage-ink)':'var(--ink-3)'))},svg);
+      if(r===0){const xs=X(Math.min(st.S,st.n));S('path',{d:'M'+X(0)+' '+(y0+10)+' L'+X(0)+' '+(y0+16)+' L'+xs+' '+(y0+16)+' L'+xs+' '+(y0+10),style:'fill:none;stroke:var(--ink-3);stroke-width:1.2'},svg);
+        S('text',{x:X(0)+4,y:y0+8,text:'三个请求共享这一段',style:'font-size:12px;fill:var(--ink-2)'},svg);}
+      S('rect',{x:X(0),y:ty,width:X(st.n)-X(0),height:20,rx:10,style:'fill:var(--surface-2);stroke:var(--line);stroke-width:1'},svg);
+      if(o.hit>0)S('rect',{x:X(0),y:ty,width:X(o.hit)-X(0),height:20,rx:10,style:'fill:'+(badHit?'var(--warn)':'var(--sage)')},svg);
+      if(R.Bs!==BM){for(let t=R.Bs;t<st.n;t+=R.Bs)S('line',{x1:X(t),x2:X(t),y1:ty+20,y2:ty+25,style:'stroke:var(--ink-3);stroke-width:1'},svg);}
+      if(r>0){
+        S('line',{x1:X(o.Latt),x2:X(o.Latt),y1:ty-8,y2:ty+28,style:'stroke:var(--sky);stroke-width:3'},svg);
+        S('text',{x:X(o.Latt)+5,y:ty-10,text:'attention '+fmt(o.Latt),style:'font-size:12px;fill:var(--sky-ink)'},svg);
+        if(o.ceil!==o.Latt){S('line',{x1:X(o.ceil),x2:X(o.ceil),y1:ty-8,y2:ty+28,style:'stroke:var(--ink-2);stroke-width:1.6;stroke-dasharray:4 3'},svg);
+          S('text',{x:X(o.ceil)-5,y:ty-10,'text-anchor':'end',text:'上限 '+fmt(o.ceil),style:'font-size:12px;fill:var(--ink-2)'},svg);}}
+      const cy=ty+38;
+      o.chunks.forEach(([a,b],i)=>{S('rect',{x:X(a)+1,y:cy,width:Math.max(2,X(b)-X(a)-2),height:8,rx:4,style:'fill:'+(i%2?'var(--ink-3)':'var(--ink-2)')},svg);
+        S('text',{x:X(b),y:cy+(i%2?36:22),'text-anchor':'middle',text:fmt(b),class:'m',style:'font-size:11px;fill:var(--ink-2)'},svg);});
+      o.nulls.forEach(p=>S('rect',{x:X(p)-6,y:ty+4,width:12,height:12,rx:2,style:'fill:var(--surface);stroke:var(--ink-3);stroke-width:1.4;stroke-dasharray:2 2'},svg));
+      o.newE.forEach(e=>{const x=X(e.pos),yc=ty+10;
+        if(e.bad){S('circle',{cx:x,cy:yc,r:9,style:'fill:var(--warn);stroke:var(--surface);stroke-width:2'},svg);
+          S('text',{x,y:yc+4,'text-anchor':'middle',text:'!',style:'font-size:12px;font-weight:700;fill:var(--surface)'},svg);
+          S('text',{x,y:ty+92,'text-anchor':'middle',text:'hash 说 '+fmt(e.pos)+'，state 其实在 '+fmt(e.state),style:'font-size:12px;font-weight:600;fill:var(--warn)'},svg);}
+        else if(e.kind==='alias'){S('rect',{x:x-6,y:yc-6,width:12,height:12,transform:'rotate(45 '+x+' '+yc+')',style:'fill:var(--clay);stroke:var(--surface);stroke-width:2'},svg);}
+        else S('circle',{cx:x,cy:yc,r:8,style:'fill:var(--clay);stroke:var(--surface);stroke-width:2'},svg);});
+    });
+    const v=$('g-verdict');
+    v.innerHTML=anyBad?'<b class="bad">注意：</b>后面的请求命中了错位的 checkpoint。hash 代表的位置和 state 实际所在的位置不一样，输出会悄悄变错。'
+      :'结果：REQ2 命中 <b>'+fmt(hits[1])+'</b>，REQ3 命中 <b>'+fmt(hits[2])+'</b>，三个请求共 '+fmt(st.n*3)+' token 中复用 '+fmt(hits[1]+hits[2])+'。';
+    const T=$('g-table');let h='<tr><th>请求</th><th>attention 匹配</th><th>读侧上限</th><th>命中</th><th>chunk 结束在</th><th>新写下的 checkpoint</th><th>空 slot</th></tr>';
+    R.out.forEach((o,r)=>{const ck=o.newE.map(e=>e.bad?'<span class="bad">'+fmt(e.pos)+'（state '+fmt(e.state)+'）</span>':(fmt(e.pos)+(e.kind==='alias'?' 尾部':''))).join('、')||'无';
+      h+='<tr><td>REQ'+(r+1)+'</td><td class="num">'+(r?fmt(o.Latt):'—')+'</td><td class="num">'+(r?fmt(o.ceil):'—')+'</td><td class="num">'+(o.hitE&&o.hitE.bad?'<span class="bad">'+fmt(o.hit)+'</span>':fmt(o.hit))+'</td><td class="num">'+o.chunks.map(c=>fmt(c[1])).join('、')+'</td><td class="num">'+ck+'</td><td class="num">'+(o.nulls.map(fmt).join('、')||'无')+'</td></tr>';});
+    T.innerHTML=h;}
+  render();
+})();
+
+/* ---------------- lab 4: radix tree ---------------- */
+(function treeLab(){
+  const SEG={SYS:['系统提示',1024,'sys'],DA:['文档 A',1536,'doc'],DB:['文档 B',1280,'doc'],Q1:['问题 1',128,'q'],Q2:['问题 2',160,'q'],Q3:['问题 3',96,'q'],Q4:['问题 4',128,'q'],Q5:['追问',96,'q'],
+    A1:['回答 1',320,'a'],A2:['回答 2',192,'a'],A3:['回答 3',256,'a'],A4:['回答 4',224,'a'],A5:['回答 5',160,'a']};
+  const REQS=[{id:'R1',p:['SYS','DA','Q1'],o:'A1',note:'第一次问文档 A'},{id:'R2',p:['SYS','DA','Q2'],o:'A2',note:'换个问题问文档 A'},{id:'R3',p:['SYS','DB','Q3'],o:'A3',note:'问文档 B'},
+    {id:'R4',p:['SYS','DA','Q1','A1','Q5'],o:'A4',note:'接着 R1 追问'},{id:'R5',p:['SYS','DA','Q4'],o:'A5',note:'第三次问文档 A'}];
+  const len=id=>SEG[id][1];const L=segs=>segs.reduce((a,s)=>a+len(s),0);
+  const lcp=(a,b)=>{let t=0;for(let i=0;i<Math.min(a.length,b.length);i++){if(a[i]!==b[i])break;t+=len(a[i]);}return t;};
+  const cover=(segs,p)=>{let t=0;for(let i=0;i<segs.length;i++){t+=len(segs[i]);if(p<=t)return segs.slice(0,i+1);}return null;};
+  const same=(a,b)=>!!a&&!!b&&a.length===b.length&&a.every((x,i)=>x===b[i]);
+  const T={policy:'marconi',evict:'lru',K:6,order:[0,1,2,3,4]};
+  const PN={marconi:'Marconi',nobuf:'SGLang no_buffer',extra:'SGLang extra_buffer'};
+  function run(policy,evict,K,order){
+    const st={seqs:[],cks:[],log:[]};
+    order.forEach((ri,step)=>{const R=REQS[ri],P=R.p,full=P.concat([R.o]),Lp=L(P),Lf=L(full),now=step+1;
+      let a=0;st.seqs.forEach(s=>{a=Math.max(a,lcp(P,s));});a=Math.min(a,Lp-1);
+      let h=0,hc=null;st.cks.forEach(c=>{if(!c.ev&&c.pos<=a&&c.pos>h&&same(cover(P,c.pos),c.segs)){h=c.pos;hc=c;}});
+      if(hc)hc.t=now;
+      const pos=[],CH=1024,f64=x=>Math.floor(x/64)*64,f256=x=>Math.floor(x/256)*256;
+      if(policy==='marconi'){if(a>0&&a>h&&st.seqs.some(s=>lcp(P,s)===a&&L(s)>a))pos.push(a);pos.push(Lf);}
+      else if(policy==='nobuf'){for(let c=h+CH;c<Lp;c+=CH)pos.push(c);pos.push(Lp);pos.push(Lf);}
+      else{for(let c=h+CH;c<Lp;c+=CH)pos.push(f64(c));if(a>h)pos.push(f64(a));pos.push(f64(Lp));const tr=f256(Lf);if(tr>Lp)pos.push(tr);}
+      const created=[];
+      Array.from(new Set(pos)).filter(p=>p>h&&p>0).sort((x,y)=>x-y).forEach(p=>{const segs=cover(full,p);
+        if(st.cks.some(c=>!c.ev&&c.pos===p&&same(c.segs,segs)))return;
+        const c={pos:p,segs,t:now,born:now,ev:false,req:R.id};st.cks.push(c);created.push(c);});
+      st.seqs.push(full);
+      const evicted=[];let act=st.cks.filter(c=>!c.ev);
+      while(act.length>K){let cand=act.filter(c=>created.indexOf(c)<0);if(!cand.length)cand=act;let v;
+        if(evict==='lru')v=cand.reduce((m,c)=>(c.t<m.t||(c.t===m.t&&c.born<m.born))?c:m);
+        else{const ts=act.map(c=>c.t),ps=act.map(c=>c.pos),t0=Math.min(...ts),t1=Math.max(...ts),p0=Math.min(...ps),p1=Math.max(...ps);
+          const u=c=>(c.t-t0)/((t1-t0)||1)+(c.pos-p0)/((p1-p0)||1);v=cand.reduce((m,c)=>u(c)<u(m)?c:m);}
+        v.ev=true;v.evAt=now;evicted.push(v);act=st.cks.filter(c=>!c.ev);}
+      st.log.push({R,a,h,Lp,re:Lp-h,created,evicted,bad:false});});
+    return st;}
+  function trie(seqs){const root={children:[],end:0,id:null};seqs.forEach(s=>{let n=root;s.forEach(id=>{let c=n.children.find(x=>x.id===id);if(!c){c={id,start:n.end,end:n.end+len(id),children:[],parent:n};n.children.push(c);}n=c;});});return root;}
+  function nodeAt(root,segs){let n=root;for(const id of segs){n=n.children.find(x=>x.id===id);if(!n)return null;}return n;}
+  const segPol=makeSeg('t-policy',[['marconi','Marconi'],['nobuf','no_buffer'],['extra','extra_buffer']],()=>T.policy,v=>{T.policy=v;render();});
+  const segEv=makeSeg('t-evict',[['lru','LRU'],['flop','FLOP-aware']],()=>T.evict,v=>{T.evict=v;render();});
+  const kI=$('t-k');kI.addEventListener('input',()=>{T.K=+kI.value;render();});
+  const rb=$('t-reqs');
+  REQS.forEach((R,i)=>{const b=document.createElement('button');b.type='button';b.className='btn';b.innerHTML='<b>'+R.id+'</b><span>'+R.note+'</span>';b.addEventListener('click',()=>{if(T.order.indexOf(i)<0){T.order.push(i);render();}});rb.appendChild(b);});
+  $('t-all').addEventListener('click',()=>{REQS.forEach((_,i)=>{if(T.order.indexOf(i)<0)T.order.push(i);});render();});
+  $('t-reset').addEventListener('click',()=>{T.order=[];render();});
+  function render(){
+    segPol._sync();segEv._sync();$('t-k-o').textContent=T.K;
+    [...rb.children].forEach((b,i)=>{b.disabled=T.order.indexOf(i)>=0;});$('t-all').disabled=T.order.length===REQS.length;
+    const st=run(T.policy,T.evict,T.K,T.order);
+    const svg=$('tree-svg');svg.innerHTML='';
+    const root=trie(st.seqs);let lane=0;const nodes=[];
+    (function as(n){if(n!==root)nodes.push(n);if(!n.children.length){n.y=lane++;return n.y;}let f=null;n.children.forEach((c,i)=>{const y=as(c);if(i===0)f=y;});n.y=f;return f;})(root);
+    const lanes=Math.max(lane,1),X=t=>40+t/3400*930,Y=l=>78+l*66,H=Math.max(200,Y(lanes-1)+70);
+    svg.setAttribute('viewBox','0 0 1000 '+H);
+    for(let t=0;t<=3328;t+=512){S('line',{x1:X(t),x2:X(t),y1:30,y2:H-20,style:'stroke:var(--line);stroke-width:1'},svg);S('text',{x:X(t),y:22,'text-anchor':'middle',text:fmt(t),class:'m',style:'font-size:11px;fill:var(--ink-3)'},svg);}
+    if(!st.seqs.length){S('text',{x:500,y:110,'text-anchor':'middle',text:'树是空的。点上面的 R1 发第一个请求。',class:'s',style:'font-size:20px;fill:var(--ink-2)'},svg);}
+    const gl=S('g',{},svg),gb=S('g',{filter:'url(#rough)'},svg),gt=S('g',{},svg),go=S('g',{},svg),gc=S('g',{},svg);
+    const bx=n=>{const br=n.parent&&n.parent.id!==null&&n.parent.y!==n.y;return [X(n.start)+(br?18:1),X(n.end)-1,br];};
+    nodes.forEach(n=>{const y=Y(n.y),[x0,x1,br]=bx(n),k=SEG[n.id][2];
+      if(br){const py=Y(n.parent.y);S('path',{d:'M'+(X(n.start)-4)+' '+py+' C '+(X(n.start)+10)+' '+py+', '+(X(n.start)+4)+' '+y+', '+(x0+4)+' '+y,style:'fill:none;stroke:var(--ink-3);stroke-width:2'},gl);}
+      S('rect',{x:x0,y:y-13,width:Math.max(4,x1-x0),height:26,rx:13,style:'fill:var(--k-'+k+');stroke:var(--k-'+k+'-s);stroke-width:1.5'},gb);
+      if(x1-x0>70)S('text',{x:x0+12,y:y+5,text:SEG[n.id][0],style:'font-size:13px;fill:var(--ink)'},gt);});
+    const last=st.log[st.log.length-1];
+    if(last){const P=last.R.p;
+      const pathNodes=[];let n=root;for(const id of P){n=n.children.find(x=>x.id===id);pathNodes.push(n);}
+      const over=(lo,hi,style)=>{pathNodes.forEach(nd=>{const s=Math.max(lo,nd.start),e=Math.min(hi,nd.end);if(e<=s)return;const[x0]=bx(nd);const xs=Math.max(X(s),x0),xe=X(e)-1;if(xe>xs)S('rect',{x:xs,y:Y(nd.y)-13,width:xe-xs,height:26,rx:4,style:style},go);});};
+      if(last.h>0)over(0,last.h,'fill:var(--sage);opacity:.55');
+      over(last.h,last.Lp,'fill:url(#hatch);opacity:.9');
+      const laneOf=t=>{for(const nd of pathNodes){if(t>nd.start&&t<=nd.end)return nd.y;}return pathNodes[0].y;};
+      if(last.a>0){const ya=Y(laneOf(last.a));S('line',{x1:X(last.a),x2:X(last.a),y1:ya-24,y2:ya+18,style:'stroke:var(--sky);stroke-width:3'},go);
+        S('text',{x:X(last.a)+6,y:ya-26,text:'attention 匹配 '+fmt(last.a),style:'font-size:12px;fill:var(--sky-ink);font-weight:600'},go);}
+      if(last.h>0){const yh=Y(laneOf(last.h));S('circle',{cx:X(last.h),cy:yh,r:14,style:'fill:none;stroke:var(--sage-ink);stroke-width:3'},go);
+        S('text',{x:X(last.h)-6,y:yh+34,'text-anchor':'end',text:last.R.id+' 命中 '+fmt(last.h),style:'font-size:12px;fill:var(--sage-ink);font-weight:600'},go);}
+      else S('text',{x:X(0)+4,y:Y(pathNodes[0].y)+34,text:last.R.id+' 没有命中 state，全部重算',style:'font-size:12px;fill:var(--clay-ink);font-weight:600'},go);}
+    st.cks.forEach(c=>{const nd=nodeAt(root,c.segs);if(!nd)return;const x=X(c.pos),y=Y(nd.y)-13;
+      const fresh=last&&last.created.indexOf(c)>=0,justEv=last&&last.evicted.indexOf(c)>=0;
+      if(c.ev){S('circle',{cx:x,cy:y,r:7,style:'fill:var(--surface);stroke:'+(justEv?'var(--warn)':'var(--ink-3)')+';stroke-width:1.8;stroke-dasharray:3 2'},gc);
+        if(justEv)S('text',{x,y:y-12,'text-anchor':'middle',text:'刚被淘汰',style:'font-size:11px;fill:var(--warn)'},gc);}
+      else{if(fresh&&!reduce)S('circle',{cx:x,cy:y,r:8,class:'ping',style:'fill:none;stroke:var(--clay);stroke-width:2'},gc);
+        S('circle',{cx:x,cy:y,r:8,style:'fill:var(--clay);stroke:var(--surface);stroke-width:2'},gc);}});
+    const act=st.cks.filter(c=>!c.ev).length;
+    $('t-verdict').innerHTML=last?(PN[T.policy]+' · '+last.R.id+'：attention 匹配 <b>'+fmt(last.a)+'</b>，state 命中 <b>'+fmt(last.h)+'</b>，重算 <b>'+fmt(last.re)+'</b> token。树上现在挂着 '+act+' 个 state（上限 '+T.K+'）。'):'还没有请求。';
+    let h='<tr><th>请求</th><th>说明</th><th>prompt</th><th>attention 匹配</th><th>state 命中</th><th>重算</th><th>新存 state</th><th>淘汰</th></tr>';
+    st.log.forEach(l=>{h+='<tr><td class="num">'+l.R.id+'</td><td>'+l.R.note+'</td><td class="num">'+fmt(l.Lp)+'</td><td class="num">'+fmt(l.a)+'</td><td class="num">'+fmt(l.h)+'</td><td class="num">'+fmt(l.re)+'</td><td class="num">'+(l.created.map(c=>fmt(c.pos)).join('、')||'无')+'</td><td class="num">'+(l.evicted.map(c=>fmt(c.pos)).join('、')||'无')+'</td></tr>';});
+    $('t-table').innerHTML=h;
+    const bars=$('t-bars');
+    if(!T.order.length){bars.innerHTML='<p class="small muted">发几个请求之后，这里会对比三种策略。</p>';return;}
+    const total=T.order.reduce((a,i)=>a+L(REQS[i].p),0);
+    const res=['marconi','nobuf','extra'].map(p=>{const s=run(p,T.evict,T.K,T.order);return{p,re:s.log.reduce((a,l)=>a+l.re,0),made:s.cks.length};});
+    bars.innerHTML='<div class="bar-row"><div class="name">不缓存</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--ink-3);opacity:.35"></div><div class="bar-label">重算 '+fmt(total)+' token</div></div></div>'+
+      res.map(r=>'<div class="bar-row"><div class="name">'+PN[r.p]+(r.p===T.policy?' · 当前':'')+'</div><div class="bar-track"><div class="bar-fill" style="width:'+(r.re/total*100)+'%;background:'+(r.p==='marconi'?'var(--sage)':'var(--clay)')+';opacity:'+(r.p===T.policy?'.95':'.55')+'"></div><div class="bar-label">重算 '+fmt(r.re)+' token · 一共存过 '+r.made+' 个 state</div></div></div>').join('');}
+  render();
+})();
+
+/* ---------------- rail highlight ---------------- */
+(function rail(){
+  const links=[...document.querySelectorAll('#rail a')];const ids=links.map(a=>a.getAttribute('href').slice(1));
+  function upd(){let cur=ids[0];ids.forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<120)cur=id;});links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+cur));}
+  window.addEventListener('scroll',upd,{passive:true});upd();
+})();
+})();
+</script>
+
+</body></html>

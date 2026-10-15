@@ -21,8 +21,10 @@ permalink: /blog/
     <article class="blog-post-card">
         <div class="blog-post-date">{{ post.date | date: "%Y %b %d" }}</div>
         <h2 class="blog-post-title">
+            {% if post.link %}<a href="{{ post.link | relative_url }}">{% endif %}
             <span data-lang="en">{{ post.title }}</span>
             <span data-lang="zh" hidden>{{ post.title_zh | default: post.title }}</span>
+            {% if post.link %}</a>{% endif %}
         </h2>
         {% if post.summary or post.summary_zh %}
         <div class="blog-post-summary">

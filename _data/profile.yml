@@ -1,5 +1,7 @@
 primary_name: "Wenxuan Xu"
 secondary_name: "许文轩"
+tagline: >-
+  AI Performance Engineer @ Elastix AI <span class="dot">·</span> LLM inference &amp; serving
 
 # positions:
 #   - logo: /assets/images/badges/dartmouth_shield.png # Logo is optional
@@ -44,30 +46,14 @@ short_bio_zh: >-
   </p>
 
 portrait_url: /assets/images/photos/portrait.jpg
-portrait_caption: >-
-  Photo by my lovely gf Liangyuting Zhang
-
 education:
   - name: Dartmouth College
-    logo: /assets/images/badges/dartmouth_shield.png
-    position: >-
-      <div class="education-degree"><em>Master of Science in Computer Science with Concentration in Digital Arts</em></div>
-      <div class="education-details">
-        <span class="education-location">Hanover, United States</span>
-        <span class="education-date">Sep 2024 - Jun 2026</span>
-      </div>
-
-  - name: University of Liverpool (Xi'an Jiaotong-Liverpool University)
-    logo: /assets/images/badges/liverpool_logo.png
-    position: >-
-      <div class="education-degree"><em>Bachelor of Science in Information and Computing Science</em></div>
-      <div class="education-details">
-        <span class="education-location">Suzhou, China</span>
-        <span class="education-date">Sep 2020 - Jun 2024</span>
-      </div>
-      <div class="education-items">
-        • First Class Honours <br/>
-      </div>
+    degree: M.S. in Computer Science
+    date: 2024 – 2026
+  - name: University of Liverpool / Xi'an Jiaotong-Liverpool University
+    degree: B.S. in Information and Computing Science
+    date: 2020 – 2024
+    note: First Class Honours
 
 industry_experience:
   - name: Elastix AI
@@ -131,6 +117,12 @@ open_source:
       PRs: https://github.com/vllm-project/guidellm/pulls?q=is%3Apr+author%3Awenxuan-elastix
       "#1159": https://github.com/vllm-project/guidellm/pull/1159
       "#1264": https://github.com/vllm-project/guidellm/pull/1264
+
+misc:
+  image: /assets/images/photos/cat.jpg
+  alt: My orange tabby cat sitting on a desk
+  text: >-
+    Outside of work: my orange cat, who supervises every benchmark run from the desk.
 
 sglang_mascot:
   image: /assets/images/badges/sglanggirlicon.png
